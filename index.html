@@ -1769,6 +1769,11 @@ async function renderDictionary() {
   // Ordenar alfabeticamente
   vocab.sort((a, b) => a.term_en.localeCompare(b.term_en));
 
+  // Cargar datos de progreso para mostrar aciertos
+  const learning = await dbGetAll('learning');
+  const learningMap = new Map();
+  learning.forEach(l => learningMap.set(l.vocab_id, l));
+
   const container = document.getElementById('dictList');
   if (vocab.length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="es-icon">📖</div><div class="es-text">No hay terminos todavia</div></div>';
@@ -1780,9 +1785,27 @@ async function renderDictionary() {
     const diff = v.difficulty_score;
     const diffClass = diff > 0.7 ? 'diff-hard' : diff > 0.4 ? 'diff-medium' : 'diff-easy';
     const diffLabel = diff > 0.7 ? 'Dificil' : diff > 0.4 ? 'Media' : 'Facil';
+    const lp = learningMap.get(v.id);
+    const correct = lp ? lp.correct_count : 0;
+    const incorrect = lp ? lp.incorrect_count : 0;
+    const total = correct + incorrect;
+    // Color segun ratio de aciertos
+    let scoreColor = 'var(--text-secondary)';
+    if (total > 0) {
+      const ratio = correct / total;
+      scoreColor = ratio >= 0.7 ? 'var(--success)' : ratio >= 0.4 ? 'var(--warning)' : 'var(--danger)';
+    }
     return `<div class="card" style="cursor:pointer;" onclick="showVocabDetail(${v.id})">
-      <div class="vocab-en">${escapeHtml(v.term_en)}</div>
-      <div class="vocab-es">${escapeHtml(v.term_es || '(sin traduccion)')}</div>
+      <div style="display:flex; justify-content:space-between; align-items:start;">
+        <div style="flex:1;">
+          <div class="vocab-en">${escapeHtml(v.term_en)}</div>
+          <div class="vocab-es">${escapeHtml(v.term_es || '(sin traduccion)')}</div>
+        </div>
+        <div style="text-align:center; min-width:40px;">
+          <div style="font-size:16px; font-weight:700; color:${scoreColor};">${correct}✓</div>
+          ${incorrect > 0 ? `<div style="font-size:11px; color:var(--danger);">${incorrect}✕</div>` : ''}
+        </div>
+      </div>
       <div class="vocab-badges">
         ${v.category ? `<span class="badge">${v.category}</span>` : ''}
         <span class="diff-dot ${diffClass}" title="${diffLabel}"></span>
