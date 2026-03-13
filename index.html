@@ -478,8 +478,11 @@ body.dark .warn-banner { background: #78350F; color: #FDE68A; }
 
     <!-- Modo: Pegar texto -->
     <div class="text-input-zone" id="textInputZone">
-      <textarea id="pasteArea" placeholder="Pega aqui el texto en ingles del que quieres extraer vocabulario..."></textarea>
-      <button class="btn btn-primary btn-block" style="margin-top:8px;" id="btnProcessText">Extraer vocabulario del texto</button>
+      <textarea id="pasteArea" placeholder="Pega aqui texto o una lista de palabras (una por linea)..."></textarea>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn btn-primary btn-block" id="btnProcessText">Extraer vocabulario</button>
+        <button class="btn btn-danger btn-sm" id="btnClearText" style="display:none;">🗑️ Borrar</button>
+      </div>
     </div>
 
     <!-- Modo: Foto / OCR -->
@@ -1220,21 +1223,130 @@ async function handleFiles() {
 }
 
 // --- Modo PEGAR TEXTO ---
+// Mostrar/ocultar boton borrar segun contenido del textarea
+const pasteArea = document.getElementById('pasteArea');
+const btnClearText = document.getElementById('btnClearText');
+pasteArea.addEventListener('input', () => {
+  btnClearText.style.display = pasteArea.value.trim() ? '' : 'none';
+});
+
+// Boton borrar texto
+btnClearText.addEventListener('click', () => {
+  pasteArea.value = '';
+  btnClearText.style.display = 'none';
+  toast('Texto borrado');
+});
+
+// Detectar si el texto es una lista de entradas (una por linea)
+// Cubre: palabras sueltas, frases hechas, conectores, expresiones
+function isWordList(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length < 2) return false;
+  // Es lista si hay multiples lineas y la mayoria son entradas cortas
+  // (hasta 10 palabras cubre frases hechas como "on the other hand" o
+  // "based on the information we have today")
+  const entryLines = lines.filter(l => {
+    const words = l.split(/\s+/).length;
+    // Lineas cortas (hasta 10 palabras) o con formato "termino: traduccion"
+    return words <= 10 || l.includes(':');
+  });
+  return entryLines.length >= lines.length * 0.6;
+}
+
+// Parsear lista de palabras, frases hechas, conectores (una entrada por linea)
+function parseWordList(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const results = [];
+  const seen = new Set();
+
+  for (const line of lines) {
+    // Limpiar punto final suelto (pero no puntos suspensivos ni abreviaturas)
+    let cleaned = line.replace(/\.$/,'').trim();
+    // Quitar comillas envolventes si las tiene
+    cleaned = cleaned.replace(/^[""](.+)[""]$/, '$1').trim();
+    if (cleaned.length < 2) continue;
+
+    const key = cleaned.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    // Detectar formato "termino: traduccion" o "termino - traduccion"
+    const sepMatch = cleaned.match(/^(.+?)\s*[:–—-]\s+(.+)$/);
+    if (sepMatch && sepMatch[1].length > 1 && sepMatch[2].length > 1) {
+      results.push({
+        term_en: sepMatch[1].trim(),
+        term_es: sepMatch[2].trim().replace(/\.$/, ''),
+        meaning: '',
+        example_sentences: [],
+        category: 'General',
+        difficulty_score: 0.5,
+        source_document: 'Texto pegado'
+      });
+    } else {
+      results.push({
+        term_en: cleaned,
+        term_es: '',
+        meaning: '',
+        example_sentences: [],
+        category: 'General',
+        difficulty_score: 0.5,
+        source_document: 'Texto pegado'
+      });
+    }
+  }
+  return results;
+}
+
 document.getElementById('btnProcessText').addEventListener('click', async () => {
-  const textarea = document.getElementById('pasteArea');
-  const text = textarea.value.trim();
+  const text = pasteArea.value.trim();
   if (!text) {
     toast('Pega un texto primero');
     return;
   }
-  if (text.split(/\s+/).length < 5) {
+  if (text.length < 3) {
     toast('El texto es demasiado corto');
     return;
   }
-  toast('Procesando texto pegado...');
-  await processExtractedText(text, 'Texto pegado');
-  textarea.value = '';
+
+  // Detectar si es lista de palabras o texto continuo
+  if (isWordList(text)) {
+    toast('Lista de palabras detectada...');
+    const candidates = parseWordList(text);
+    if (candidates.length === 0) {
+      toast('No se encontraron terminos validos');
+      return;
+    }
+    // Usar processExtractedText con los candidatos directos
+    await processWordListCandidates(candidates);
+  } else {
+    toast('Procesando texto pegado...');
+    await processExtractedText(text, 'Texto pegado');
+  }
+  pasteArea.value = '';
+  btnClearText.style.display = 'none';
 });
+
+// Procesar candidatos de lista de palabras (sin pasar por NLP)
+async function processWordListCandidates(candidates) {
+  // Filtrar contra base de datos existente
+  const existing = await dbGetAll('vocabulary');
+  const existingTerms = existing.map(v => v.term_en.toLowerCase());
+  const newCandidates = candidates.filter(c => !existingTerms.includes(c.term_en.toLowerCase()));
+
+  if (newCandidates.length === 0) {
+    toast('Todos los terminos ya existen en el diccionario');
+    return;
+  }
+
+  await dbAdd('documents', {
+    filename: 'Lista pegada',
+    upload_date: new Date().toISOString(),
+    word_count: newCandidates.length,
+    terms_extracted: newCandidates.length
+  });
+
+  showReviewScreen(newCandidates, 'Lista pegada');
+}
 
 // --- Modo FOTO / OCR ---
 photoCapture.addEventListener('click', () => photoInput.click());
