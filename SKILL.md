@@ -5,7 +5,7 @@
 
 ---
 
-## PASO 1 — ANÁLISIS CONCEPTUAL
+## PASO 1 — ANÁLISIS CONCEPTUAL ✅ COMPLETADO
 
 Antes de escribir ningún código:
 
@@ -15,56 +15,72 @@ Antes de escribir ningún código:
 - Proponer una arquitectura de alto nivel
 - Explicar el razonamiento con claridad
 
-**❌ No empezar a programar todavía.**
+**Resultado:** PWA 100% frontend, IndexedDB, coste cero, mobile-first.
 
 ---
 
-## PASO 2 — PREGUNTAS DE ACLARACIÓN
+## PASO 2 — PREGUNTAS DE ACLARACIÓN ✅ COMPLETADO
 
-Hacer todas las preguntas necesarias para eliminar ambigüedades. Ejemplos:
+Preguntas resueltas:
 
-- Lenguaje de programación preferido
-- Estilo de interfaz preferido
-- Entorno de hosting
-- Número esperado de documentos
-- Consideraciones de privacidad
-- Límites de almacenamiento
-
-**⏸️ Esperar las respuestas antes de continuar.**
-
----
-
-## PASO 3 — MOCKUP DE INTERFAZ DE USUARIO
-
-Antes de programar, diseñar un mockup visual de la aplicación. Incluir:
-
-- Pantalla de bienvenida
-- Interfaz de carga de documentos
-- Interfaz de selección de vocabulario
-- Página del diccionario
-- Página del módulo de aprendizaje
-- Estructura de navegación
-
-El mockup puede presentarse como:
-- Wireframes
-- Bocetos de interfaz en ASCII
-- Descripciones estructuradas de UI
-
-**El objetivo es que el usuario pueda revisar y aprobar la interfaz antes de la implementación.**
+- **Plataforma**: Móvil principal, compatible tablet/ordenador
+- **Coste**: Cero absoluto — solo tecnologías gratuitas
+- **Hosting**: GitHub Pages (https://flochamonche.github.io/ENGPRO/)
+- **Almacenamiento**: IndexedDB local + export/import JSON manual
+- **Estilo visual**: Azules suaves (día), tema oscuro (noche)
+- **Backend**: No — todo en JS vanilla en el navegador
+- **Sincronización**: Manual vía export/import JSON (OneDrive, USB, etc.)
+- **Privacidad**: Datos 100% locales en el dispositivo
 
 ---
 
-## PASO 4 — IMPLEMENTACIÓN DE LA APLICACIÓN
+## PASO 3 — MOCKUP DE INTERFAZ DE USUARIO ✅ COMPLETADO
 
-Solo después de que el mockup esté aprobado:
+Mockup visual interactivo entregado en `mockup.html`:
 
-- Implementar la aplicación
-- Usar arquitectura modular
-- Escribir código claro y documentado
-- Asegurar que el sistema pueda ejecutarse localmente
+- Pantalla de documentos (3 modos de entrada)
+- Pantalla de revisión de vocabulario
+- Pantalla del diccionario con búsqueda y filtros
+- Pantalla del módulo de aprendizaje (4 modos + filtro por temas)
+- Pantalla de ajustes (tema, backup, configuración)
+- Navegación inferior con 4 secciones
 
-Proporcionar siempre:
-- Estructura de carpetas del proyecto
-- Módulos principales
-- Código de ejemplo
-- Instrucciones para ejecutar la aplicación
+**Aprobado por el usuario antes de implementar.**
+
+---
+
+## PASO 4 — IMPLEMENTACIÓN DE LA APLICACIÓN ✅ COMPLETADO
+
+App implementada en archivo único `index.html` con:
+
+- 3 modos de entrada: archivo (PDF/DOCX/TXT), pegar texto, foto/OCR
+- Parser inteligente para bases de datos estructuradas
+- Detección automática de listas vs texto continuo
+- Traducción automática (MyMemory API) + significados (Dictionary API)
+- Diccionario con búsqueda, filtros, aciertos/fallos, edición, eliminación
+- 4 modos de aprendizaje con SM-2 y filtro por temas
+- 96 términos precargados en 7 categorías
+- Export/import JSON con fusión inteligente
+- Tema día/noche persistente
+- PWA instalable en móvil
+
+**Desplegado en:** https://flochamonche.github.io/ENGPRO/
+
+---
+
+## PASO 5 — ITERACIÓN Y MEJORAS (ACTIVO)
+
+Workflow para nuevas funcionalidades:
+
+1. El usuario propone una mejora o reporta un problema
+2. Claude analiza el impacto y propone solución
+3. Implementar el cambio mínimo necesario
+4. Probar antes de hacer push
+5. Commit + push a GitHub (auto-deploy en Pages)
+
+**Reglas para iteraciones:**
+- No romper funcionalidad existente
+- Paso a paso: una mejora por ciclo
+- Preguntar ante la duda
+- Mantener todo en un solo archivo HTML
+- Push solo cuando el usuario confirme
