@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eng-Pro — Mockup Visual</title>
+<style>
+  /* === RESET Y BASE === */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+  }
+
+  /* === TEMAS === */
+  :root {
+    --bg: #F0F4F8;
+    --bg-card: #FFFFFF;
+    --primary: #3B82F6;
+    --primary-dark: #1D4ED8;
+    --primary-light: #DBEAFE;
+    --text: #1E293B;
+    --text-secondary: #64748B;
+    --border: #CBD5E1;
+    --success: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --shadow: rgba(30, 41, 59, 0.08);
+    --nav-bg: #FFFFFF;
+    --input-bg: #F8FAFC;
+    --badge-bg: #EFF6FF;
+    --badge-text: #1D4ED8;
+  }
+
+  body.dark {
+    --bg: #0F172A;
+    --bg-card: #1E293B;
+    --primary: #60A5FA;
+    --primary-dark: #3B82F6;
+    --primary-light: #1E3A5F;
+    --text: #E2E8F0;
+    --text-secondary: #94A3B8;
+    --border: #334155;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --nav-bg: #1E293B;
+    --input-bg: #0F172A;
+    --badge-bg: #1E3A5F;
+    --badge-text: #60A5FA;
+  }
+
+  body { background: var(--bg); color: var(--text); }
+
+  /* === CONTENEDOR MOVIL === */
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    margin: 30px auto;
+    border-radius: 40px;
+    border: 3px solid var(--border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+    box-shadow: 0 20px 60px var(--shadow);
+    transition: all 0.3s;
+  }
+
+  /* === CABECERA === */
+  .header {
+    padding: 16px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+  body.dark .header h1 { color: var(--primary); }
+  .header-subtitle {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+  .theme-toggle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--input-bg);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .theme-toggle:hover { border-color: var(--primary); transform: scale(1.1); }
+
+  /* === CONTENIDO === */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  /* === PANTALLAS === */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* === NAVEGACION INFERIOR === */
+  .nav-bar {
+    display: flex;
+    background: var(--nav-bg);
+    border-top: 1px solid var(--border);
+    padding: 8px 0 12px;
+  }
+  .nav-item {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .nav-item .nav-icon {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .nav-item.active { color: var(--primary); }
+  .nav-item:hover { color: var(--primary); }
+
+  /* === COMPONENTES COMUNES === */
+  .card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .card:hover { box-shadow: 0 4px 16px var(--shadow); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-success { background: var(--success); color: white; }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+  }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+  .btn-block { width: 100%; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 14px;
+    transition: border 0.2s;
+  }
+  .input-field:focus { outline: none; border-color: var(--primary); }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    border-radius: 4px;
+    transition: width 0.5s;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin: 12px 0;
+  }
+  .stat-item .stat-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .stat-item .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* === PANTALLA DOCS === */
+  .upload-zone {
+    border: 2px dashed var(--primary);
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    background: var(--primary-light);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+  }
+  .upload-zone:hover { background: var(--badge-bg); border-style: solid; }
+  .upload-zone .upload-icon { font-size: 40px; margin-bottom: 8px; }
+  .upload-zone .upload-text { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  .upload-zone .upload-formats { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+  .doc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+  }
+  .doc-icon { font-size: 28px; }
+  .doc-info { flex: 1; }
+  .doc-name { font-weight: 600; font-size: 14px; }
+  .doc-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* === PANTALLA REVISION === */
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .review-counter {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .term-card { padding: 18px; }
+  .term-en {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 6px;
+  }
+  body.dark .term-en { color: var(--primary); }
+  .term-context {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    padding: 10px;
+    background: var(--input-bg);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+  }
+  .term-translation-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .term-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .term-actions .btn { flex: 1; }
+
+  /* === PANTALLA DICCIONARIO === */
+  .dict-search {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .dict-search .input-field { flex: 1; }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-chip.active, .filter-chip:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .vocab-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+  }
+  .vocab-en { font-weight: 700; font-size: 15px; }
+  .vocab-es { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+  .vocab-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .difficulty-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .diff-easy { background: var(--success); }
+  .diff-medium { background: var(--warning); }
+  .diff-hard { background: var(--danger); }
+
+  /* === PANTALLA APRENDIZAJE === */
+  .mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .mode-card {
+    padding: 16px 12px;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid var(--border);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mode-card:hover, .mode-card.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .mode-card .mode-icon { font-size: 28px; margin-bottom: 6px; }
+  .mode-card .mode-name { font-size: 13px; font-weight: 700; }
+
+  .quiz-card {
+    text-align: center;
+    padding: 24px 16px;
+  }
+  .quiz-prompt { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+  .quiz-word {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+  }
+  body.dark .quiz-word { color: var(--primary); }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-option {
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-card);
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+  .quiz-option:hover { border-color: var(--primary); background: var(--primary-light); }
+  .quiz-option.correct { border-color: var(--success); background: #D1FAE5; color: #065F46; }
+  .quiz-option.wrong { border-color: var(--danger); background: #FEE2E2; color: #991B1B; }
+  body.dark .quiz-option.correct { background: #064E3B; color: #6EE7B7; }
+  body.dark .quiz-option.wrong { background: #7F1D1D; color: #FCA5A5; }
+
+  .streak-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .streak { font-size: 16px; font-weight: 700; }
+  .session-count { font-size: 13px; color: var(--text-secondary); }
+
+  /* === PANTALLA AJUSTES === */
+  .settings-group {
+    margin-bottom: 16px;
+  }
+  .settings-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+  }
+  .setting-label { font-size: 14px; font-weight: 500; }
+  .setting-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .toggle-switch {
+    width: 48px; height: 26px;
+    border-radius: 13px;
+    background: var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .toggle-switch.on { background: var(--primary); }
+  .toggle-switch::after {
+    content: '';
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px; left: 2px;
+    transition: left 0.3s;
+  }
+  .toggle-switch.on::after { left: 24px; }
+
+  .warning-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #FEF3C7;
+    color: #92400E;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  body.dark .warning-banner { background: #78350F; color: #FDE68A; }
+
+  .export-btns { display: flex; flex-direction: column; gap: 8px; }
+
+  /* === INDICADOR DE PAGINA === */
+  .page-indicator {
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* === CONTROLES MOCKUP === */
+  .mockup-controls {
+    text-align: center;
+    margin: 20px auto;
+    max-width: 375px;
+  }
+  .mockup-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: var(--primary-dark);
+  }
+  body.dark .mockup-title { color: var(--primary); }
+  .mockup-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .mockup-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- Controles del mockup -->
+<div class="mockup-controls">
+  <div class="mockup-title">ENG-PRO</div>
+  <div class="mockup-subtitle">Mockup interactivo — navega por las pantallas</div>
+</div>
+
+<!-- Frame del movil -->
+<div class="phone-frame">
+  <!-- Cabecera -->
+  <div class="header">
+    <div>
+      <h1>ENG-PRO</h1>
+      <div class="header-subtitle">Vocabulario profesional</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">☀️</button>
+  </div>
+
+  <!-- Indicador de pantalla -->
+  <div class="page-indicator" id="pageIndicator">DOCUMENTOS</div>
+
+  <!-- Contenido scrolleable -->
+  <div class="content">
+
+    <!-- ===== PANTALLA 1: DOCUMENTOS ===== -->
+    <div class="screen active" id="screen-docs">
+      <div class="upload-zone" onclick="showScreen('review')">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">Toca para subir documentos</div>
+        <div class="upload-formats">PDF · DOCX · TXT</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number">847</div>
+          <div class="stat-label">Terminos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Documentos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">85%</div>
+          <div class="stat-label">Dominio</div>
+        </div>
+      </div>
+
+      <div style="font-size:13px; font-weight:700; color:var(--text-secondary); margin-bottom:10px;">Documentos recientes</div>
+
+      <div class="card" onclick="showScreen('review')" style="cursor:pointer">
+        <div class="doc-item">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info">
+            <div class="doc-name">Report_Q3_2024.pdf</div>
+            <div class="doc-meta">12 terminos extraidos · Hoy</div>
+          </div>
+          <div class="badge">Nuevo</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="doc-item">
+          <div class="doc-icon">📝</div>
+          <div class="doc-info">
+            <div class="doc-name">Contract_draft.docx</div>
+            <div class="doc-meta">8 terminos · Ayer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="doc-item">
+          <div class="doc-icon">📃</div>
+          <div class="doc-info">
+            <div class="doc-name">Meeting_notes.txt</div>
+            <div class="doc-meta">5 terminos · 3 dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="doc-item">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info">
+            <div class="doc-name">Project_proposal.pdf</div>
+            <div class="doc-meta">15 terminos · 1 sem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PANTALLA 1B: REVISION DE VOCABULARIO ===== -->
+    <div class="screen" id="screen-review">
+      <div class="review-header">
+        <button class="btn btn-sm btn-outline" onclick="showScreen('docs')">← Volver</button>
+        <div class="review-counter">3 / 12 terminos</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 25%;"></div>
+      </div>
+
+      <div class="card term-card">
+        <div class="term-en">stakeholder engagement</div>
+        <div class="term-context">"...improve <b>stakeholder engagement</b> across all project phases to ensure alignment..."</div>
+        <div class="term-translation-label">Traduccion sugerida:</div>
+        <input class="input-field" value="participacion de partes interesadas" />
+        <div class="term-actions">
+          <button class="btn btn-sm btn-success">✓ Aceptar</button>
+          <button class="btn btn-sm btn-outline">✏️ Editar</button>
+          <button class="btn btn-sm btn-danger">✕</button>
+        </div>
+      </div>
+
+      <div class="card term-card">
+        <div class="term-en">risk assessment</div>
+        <div class="term-context">"...conduct a thorough <b>risk assessment</b> before proceeding with the implementation..."</div>
+        <div class="term-translation-label">Traduccion sugerida:</div>
+        <input class="input-field" value="evaluacion de riesgos" />
+        <div class="term-actions">
+          <button class="btn btn-sm btn-success">✓ Aceptar</button>
+          <button class="btn btn-sm btn-outline">✏️ Editar</button>
+          <button class="btn btn-sm btn-danger">✕</button>
+        </div>
+      </div>
+
+      <div class="card term-card">
+        <div class="term-en">due diligence</div>
+        <div class="term-context">"...the <b>due diligence</b> process revealed several compliance gaps..."</div>
+        <div class="term-translation-label">Traduccion sugerida:</div>
+        <input class="input-field" value="diligencia debida" />
+        <div class="term-actions">
+          <button class="btn btn-sm btn-success">✓ Aceptar</button>
+          <button class="btn btn-sm btn-outline">✏️ Editar</button>
+          <button class="btn btn-sm btn-danger">✕</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" style="margin-top:8px;">Guardar seleccionados (3)</button>
+    </div>
+
+    <!-- ===== PANTALLA 2: DICCIONARIO ===== -->
+    <div class="screen" id="screen-dict">
+      <div class="dict-search">
+        <input class="input-field" placeholder="Buscar termino..." />
+        <button class="btn btn-primary btn-sm">🔍</button>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-chip active">Todos</span>
+        <span class="filter-chip">Business</span>
+        <span class="filter-chip">Technical</span>
+        <span class="filter-chip">Legal</span>
+      </div>
+
+      <div class="card vocab-item">
+        <div>
+          <div class="vocab-en">accountability</div>
+          <div class="vocab-es">responsabilidad</div>
+          <div class="vocab-badges">
+            <span class="badge">Business</span>
+            <span class="difficulty-dot diff-hard" title="Dificil"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card vocab-item">
+        <div>
+          <div class="vocab-en">benchmark</div>
+          <div class="vocab-es">punto de referencia</div>
+          <div class="vocab-badges">
+            <span class="badge">Technical</span>
+            <span class="difficulty-dot diff-medium" title="Media"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card vocab-item">
+        <div>
+          <div class="vocab-en">compliance</div>
+          <div class="vocab-es">cumplimiento normativo</div>
+          <div class="vocab-badges">
+            <span class="badge">Legal</span>
+            <span class="difficulty-dot diff-easy" title="Facil"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card vocab-item">
+        <div>
+          <div class="vocab-en">due diligence</div>
+          <div class="vocab-es">diligencia debida</div>
+          <div class="vocab-badges">
+            <span class="badge">Legal</span>
+            <span class="difficulty-dot diff-hard" title="Dificil"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card vocab-item">
+        <div>
+          <div class="vocab-en">feasibility study</div>
+          <div class="vocab-es">estudio de viabilidad</div>
+          <div class="vocab-badges">
+            <span class="badge">Technical</span>
+            <span class="difficulty-dot diff-medium" title="Media"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; padding:12px; font-size:12px; color:var(--text-secondary);">
+        847 terminos en total
+      </div>
+    </div>
+
+    <!-- ===== PANTALLA 3: APRENDER ===== -->
+    <div class="screen" id="screen-learn">
+      <div class="mode-selector">
+        <div class="mode-card active">
+          <div class="mode-icon">🔤</div>
+          <div class="mode-name">Opcion multiple</div>
+        </div>
+        <div class="mode-card">
+          <div class="mode-icon">✍️</div>
+          <div class="mode-name">Escribir respuesta</div>
+        </div>
+        <div class="mode-card">
+          <div class="mode-icon">📝</div>
+          <div class="mode-name">Completar frase</div>
+        </div>
+        <div class="mode-card">
+          <div class="mode-icon">🔄</div>
+          <div class="mode-name">Repaso rapido</div>
+        </div>
+      </div>
+
+      <div class="card quiz-card">
+        <div class="quiz-prompt">Como se dice en espanol?</div>
+        <div class="quiz-word">accountability</div>
+        <div class="quiz-options">
+          <div class="quiz-option" onclick="selectOption(this, false)">disponibilidad</div>
+          <div class="quiz-option" onclick="selectOption(this, true)">responsabilidad</div>
+          <div class="quiz-option" onclick="selectOption(this, false)">contabilidad</div>
+          <div class="quiz-option" onclick="selectOption(this, false)">accesibilidad</div>
+        </div>
+      </div>
+
+      <div class="streak-bar">
+        <div class="streak">🔥 12 racha</div>
+        <div class="session-count">24 / 30 hoy</div>
+      </div>
+
+      <div class="progress-bar" style="margin-top:8px;">
+        <div class="progress-fill" style="width: 80%;"></div>
+      </div>
+      <div style="text-align:center; font-size:12px; color:var(--text-secondary); margin-top:4px;">80% de la sesion completada</div>
+    </div>
+
+    <!-- ===== PANTALLA 4: AJUSTES ===== -->
+    <div class="screen" id="screen-settings">
+
+      <div class="settings-group">
+        <div class="settings-group-title">Apariencia</div>
+        <div class="card">
+          <div class="setting-item">
+            <div>
+              <div class="setting-label">Modo oscuro</div>
+              <div class="setting-desc">Cambiar entre tema dia/noche</div>
+            </div>
+            <div class="toggle-switch" id="themeSettingToggle" onclick="toggleTheme()"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Datos — Prioridad maxima</div>
+
+        <div class="warning-banner">
+          ⚠️ Llevas 3 dias sin exportar tu base de datos
+        </div>
+
+        <div class="card export-btns">
+          <button class="btn btn-primary btn-block">📤 Exportar base de datos (JSON)</button>
+          <button class="btn btn-outline btn-block">📥 Importar base de datos</button>
+          <div style="font-size:11px; color:var(--text-secondary); text-align:center; margin-top:4px;">
+            Ultimo backup: hace 3 dias · 847 terminos
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Aprendizaje</div>
+        <div class="card">
+          <div class="setting-item">
+            <div>
+              <div class="setting-label">Palabras por sesion</div>
+              <div class="setting-desc">Cantidad de terminos en cada sesion</div>
+            </div>
+            <span style="font-weight:700; color:var(--primary);">20</span>
+          </div>
+          <div style="border-top:1px solid var(--border)"></div>
+          <div class="setting-item">
+            <div>
+              <div class="setting-label">Recordatorio diario</div>
+              <div class="setting-desc">Notificacion para practicar</div>
+            </div>
+            <div class="toggle-switch on"></div>
+          </div>
+          <div style="border-top:1px solid var(--border)"></div>
+          <div class="setting-item">
+            <div>
+              <div class="setting-label">Auto-backup</div>
+              <div class="setting-desc">Backup automatico cada 7 dias</div>
+            </div>
+            <div class="toggle-switch on"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Informacion</div>
+        <div class="card" style="text-align:center; padding:20px;">
+          <div style="font-size:18px; font-weight:800; color:var(--primary);">ENG-PRO</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">v1.0 · Tu vocabulario profesional</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Navegacion inferior -->
+  <div class="nav-bar">
+    <button class="nav-item active" onclick="showScreen('docs')" id="nav-docs">
+      <span class="nav-icon">📄</span> Docs
+    </button>
+    <button class="nav-item" onclick="showScreen('dict')" id="nav-dict">
+      <span class="nav-icon">📖</span> Diccionario
+    </button>
+    <button class="nav-item" onclick="showScreen('learn')" id="nav-learn">
+      <span class="nav-icon">🧠</span> Aprender
+    </button>
+    <button class="nav-item" onclick="showScreen('settings')" id="nav-settings">
+      <span class="nav-icon">⚙️</span> Ajustes
+    </button>
+  </div>
+</div>
+
+<div class="mockup-controls">
+  <div class="mockup-note">
+    <b>Instrucciones:</b> Navega con la barra inferior. Pulsa el boton ☀️/🌙 para cambiar de tema.
+    Toca la zona de subida o un documento para ver la pantalla de revision.
+    En Aprender, toca una opcion para simular una respuesta.
+  </div>
+</div>
+
+<script>
+  // === Navegacion entre pantallas ===
+  const screenNames = {
+    'docs': 'DOCUMENTOS',
+    'review': 'REVISION DE VOCABULARIO',
+    'dict': 'DICCIONARIO',
+    'learn': 'APRENDER',
+    'settings': 'AJUSTES'
+  };
+
+  function showScreen(name) {
+    // Ocultar todas las pantallas
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Mostrar la seleccionada
+    document.getElementById('screen-' + name).classList.add('active');
+    // Actualizar navegacion
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navName = (name === 'review') ? 'docs' : name;
+    const navEl = document.getElementById('nav-' + navName);
+    if (navEl) navEl.classList.add('active');
+    // Actualizar indicador
+    document.getElementById('pageIndicator').textContent = screenNames[name] || name.toUpperCase();
+    // Scroll arriba
+    document.querySelector('.content').scrollTop = 0;
+  }
+
+  // === Cambio de tema ===
+  let isDark = false;
+  function toggleTheme() {
+    isDark = !isDark;
+    document.body.classList.toggle('dark', isDark);
+    document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+    // Actualizar toggle de ajustes
+    const st = document.getElementById('themeSettingToggle');
+    if (st) st.classList.toggle('on', isDark);
+  }
+
+  // === Simulacion de quiz ===
+  function selectOption(el, correct) {
+    // Limpiar selecciones previas
+    el.parentElement.querySelectorAll('.quiz-option').forEach(o => {
+      o.classList.remove('correct', 'wrong');
+    });
+    // Marcar respuesta
+    if (correct) {
+      el.classList.add('correct');
+    } else {
+      el.classList.add('wrong');
+      // Mostrar la correcta
+      el.parentElement.querySelectorAll('.quiz-option')[1].classList.add('correct');
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#3B82F6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="manifest" href="./manifest.json">
+<title>ENG-PRO</title>
+
+<!-- Librerias externas cargadas de forma asincrona -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+
+<style>
+/* ============================================
+   ENG-PRO — Estilos principales
+   ============================================ */
+
+/* === Reset y base === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  transition: background 0.3s, color 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Variables de tema === */
+:root {
+  --bg: #F0F4F8;
+  --bg-card: #FFFFFF;
+  --primary: #3B82F6;
+  --primary-dark: #1D4ED8;
+  --primary-light: #DBEAFE;
+  --text: #1E293B;
+  --text-secondary: #64748B;
+  --border: #CBD5E1;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --shadow: rgba(30,41,59,0.08);
+  --nav-bg: #FFFFFF;
+  --input-bg: #F8FAFC;
+  --badge-bg: #EFF6FF;
+  --badge-text: #1D4ED8;
+}
+
+body.dark {
+  --bg: #0F172A;
+  --bg-card: #1E293B;
+  --primary: #60A5FA;
+  --primary-dark: #3B82F6;
+  --primary-light: #1E3A5F;
+  --text: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --border: #334155;
+  --shadow: rgba(0,0,0,0.3);
+  --nav-bg: #1E293B;
+  --input-bg: #0F172A;
+  --badge-bg: #1E3A5F;
+  --badge-text: #60A5FA;
+}
+
+body { background: var(--bg); color: var(--text); }
+
+/* === Cabecera === */
+.header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.header h1 { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+body.dark .header h1 { color: var(--primary); }
+.header-sub { font-size: 11px; color: var(--text-secondary); }
+.theme-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--border); background: var(--input-bg);
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.theme-btn:hover { border-color: var(--primary); }
+
+/* === Contenido principal === */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === Pantallas === */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* === Navegacion inferior === */
+.nav-bar {
+  display: flex;
+  background: var(--nav-bg);
+  border-top: 1px solid var(--border);
+  padding: 6px 0 max(8px, env(safe-area-inset-bottom));
+  flex-shrink: 0;
+}
+.nav-item {
+  flex: 1; text-align: center; padding: 4px 0;
+  cursor: pointer; border: none; background: none;
+  color: var(--text-secondary); font-size: 10px; font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-item .ni { font-size: 22px; display: block; margin-bottom: 1px; }
+.nav-item.active { color: var(--primary); }
+
+/* === Componentes === */
+.card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 18px; border-radius: 10px; border: none;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+.btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+.btn-block { width: 100%; }
+
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  background: var(--badge-bg); color: var(--badge-text);
+}
+
+.input-field {
+  width: 100%; padding: 10px 14px; border-radius: 10px;
+  border: 2px solid var(--border); background: var(--input-bg);
+  color: var(--text); font-size: 14px; transition: border 0.2s;
+}
+.input-field:focus { outline: none; border-color: var(--primary); }
+
+.progress-bar {
+  width: 100%; height: 8px; background: var(--border);
+  border-radius: 4px; overflow: hidden; margin: 6px 0;
+}
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  transition: width 0.4s;
+}
+
+/* === Pantalla DOCS === */
+.upload-zone {
+  border: 2px dashed var(--primary); border-radius: 16px;
+  padding: 28px 16px; text-align: center;
+  background: var(--primary-light); cursor: pointer;
+  margin-bottom: 14px; transition: all 0.2s;
+}
+.upload-zone:active { border-style: solid; }
+.upload-zone .uz-icon { font-size: 36px; margin-bottom: 6px; }
+.upload-zone .uz-text { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+.upload-zone .uz-formats { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+.stat-row { display: flex; justify-content: space-around; text-align: center; margin: 12px 0; }
+.stat-num { font-size: 22px; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+.doc-item { display: flex; align-items: center; gap: 10px; }
+.doc-icon { font-size: 26px; }
+.doc-info { flex: 1; }
+.doc-name { font-weight: 600; font-size: 13px; }
+.doc-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+.section-title {
+  font-size: 12px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin: 14px 0 8px; padding-left: 2px;
+}
+
+/* === Pantalla REVISION === */
+.review-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.review-count { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+.term-en { font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
+body.dark .term-en { color: var(--primary); }
+.term-ctx {
+  font-size: 12px; color: var(--text-secondary); font-style: italic;
+  line-height: 1.5; margin-bottom: 10px; padding: 8px 10px;
+  background: var(--input-bg); border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+.term-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600; }
+.term-actions { display: flex; gap: 6px; margin-top: 10px; }
+.term-actions .btn { flex: 1; }
+
+/* === Pantalla DICCIONARIO === */
+.dict-search { display: flex; gap: 8px; margin-bottom: 10px; }
+.dict-search .input-field { flex: 1; }
+.filter-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--bg-card);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+}
+.filter-chip.active, .filter-chip:hover {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.vocab-en { font-weight: 700; font-size: 14px; }
+.vocab-es { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.vocab-badges { display: flex; gap: 6px; margin-top: 5px; align-items: center; }
+.diff-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.diff-easy { background: var(--success); }
+.diff-medium { background: var(--warning); }
+.diff-hard { background: var(--danger); }
+.vocab-actions { display: flex; gap: 4px; margin-top: 8px; }
+
+/* === Pantalla APRENDER === */
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.mode-card {
+  padding: 14px 10px; border-radius: 12px; text-align: center;
+  border: 2px solid var(--border); background: var(--bg-card);
+  cursor: pointer; transition: all 0.2s;
+}
+.mode-card:hover, .mode-card.active { border-color: var(--primary); background: var(--primary-light); }
+.mode-card .mc-icon { font-size: 26px; margin-bottom: 4px; }
+.mode-card .mc-name { font-size: 12px; font-weight: 700; }
+
+.quiz-card { text-align: center; padding: 20px 14px; }
+.quiz-prompt { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+.quiz-word { font-size: 24px; font-weight: 800; color: var(--primary-dark); margin-bottom: 16px; }
+body.dark .quiz-word { color: var(--primary); }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  padding: 12px 14px; border-radius: 12px;
+  border: 2px solid var(--border); background: var(--bg-card);
+  text-align: left; font-size: 14px; cursor: pointer;
+  transition: all 0.2s; color: var(--text);
+}
+.quiz-opt:hover { border-color: var(--primary); }
+.quiz-opt.correct { border-color: var(--success); background: #D1FAE5; color: #065F46; }
+.quiz-opt.wrong { border-color: var(--danger); background: #FEE2E2; color: #991B1B; }
+body.dark .quiz-opt.correct { background: #064E3B; color: #6EE7B7; }
+body.dark .quiz-opt.wrong { background: #7F1D1D; color: #FCA5A5; }
+
+.quiz-input-row { display: flex; gap: 8px; margin-top: 12px; }
+.quiz-input-row .input-field { flex: 1; }
+
+.streak-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; padding: 8px 12px;
+  background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border);
+}
+.streak { font-size: 15px; font-weight: 700; }
+.session-ct { font-size: 12px; color: var(--text-secondary); }
+
+/* === Selector de temas === */
+.topic-selector {
+  margin-bottom: 12px;
+}
+.topic-toggle {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; background: var(--bg-card); border-radius: 12px;
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+}
+.topic-toggle:hover { border-color: var(--primary); }
+.topic-toggle-label { font-size: 13px; font-weight: 600; }
+.topic-toggle-count { font-size: 12px; color: var(--text-secondary); }
+.topic-list {
+  display: none; margin-top: 8px; padding: 10px;
+  background: var(--bg-card); border-radius: 12px;
+  border: 1px solid var(--border);
+  max-height: 200px; overflow-y: auto;
+}
+.topic-list.open { display: block; }
+.topic-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 6px; cursor: pointer; border-radius: 8px;
+  transition: background 0.15s; font-size: 13px;
+}
+.topic-item:hover { background: var(--primary-light); }
+.topic-check {
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 2px solid var(--border); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 12px; transition: all 0.2s; flex-shrink: 0;
+}
+.topic-item.selected .topic-check {
+  background: var(--primary); border-color: var(--primary); color: #fff;
+}
+.topic-name { flex: 1; }
+.topic-count { font-size: 11px; color: var(--text-secondary); }
+
+/* === Pantalla AJUSTES === */
+.sett-group { margin-bottom: 14px; }
+.sett-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  color: var(--text-secondary); letter-spacing: 0.5px;
+  margin-bottom: 6px; padding-left: 4px;
+}
+.sett-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 14px;
+}
+.sett-label { font-size: 14px; font-weight: 500; }
+.sett-desc { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+.toggle {
+  width: 46px; height: 24px; border-radius: 12px;
+  background: var(--border); position: relative;
+  cursor: pointer; transition: background 0.3s;
+}
+.toggle.on { background: var(--primary); }
+.toggle::after {
+  content: ''; width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; position: absolute; top: 2px; left: 2px;
+  transition: left 0.3s;
+}
+.toggle.on::after { left: 24px; }
+
+.warn-banner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; background: #FEF3C7; color: #92400E;
+  border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 10px;
+}
+body.dark .warn-banner { background: #78350F; color: #FDE68A; }
+
+.export-btns { display: flex; flex-direction: column; gap: 8px; }
+
+/* === Modal/Overlay === */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 100;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--bg-card); border-radius: 16px;
+  padding: 24px 20px; max-width: 360px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+}
+.modal h3 { font-size: 18px; margin-bottom: 12px; }
+
+/* === Spinner === */
+.spinner {
+  width: 32px; height: 32px; border: 3px solid var(--border);
+  border-top-color: var(--primary); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 20px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === Toast === */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+  padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  box-shadow: 0 4px 20px var(--shadow); z-index: 200;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.toast.visible { opacity: 1; }
+
+/* === Vaciar pantallas === */
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text-secondary);
+}
+.empty-state .es-icon { font-size: 48px; margin-bottom: 10px; }
+.empty-state .es-text { font-size: 14px; }
+
+/* === Detalle de vocabulario === */
+.detail-field { margin-bottom: 10px; }
+.detail-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 3px; }
+
+/* === Modos de entrada === */
+.input-modes {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+  margin-bottom: 14px;
+}
+.input-mode-btn {
+  padding: 10px 6px; border-radius: 12px; text-align: center;
+  border: 2px solid var(--border); background: var(--bg-card);
+  cursor: pointer; transition: all 0.2s; font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+}
+.input-mode-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.input-mode-btn .imb-icon { font-size: 22px; display: block; margin-bottom: 3px; }
+
+.text-input-zone {
+  margin-bottom: 14px; display: none;
+}
+.text-input-zone.active { display: block; }
+.text-input-zone textarea {
+  width: 100%; min-height: 120px; padding: 12px; border-radius: 12px;
+  border: 2px solid var(--border); background: var(--input-bg);
+  color: var(--text); font-size: 14px; resize: vertical;
+  font-family: inherit; line-height: 1.5;
+}
+.text-input-zone textarea:focus { outline: none; border-color: var(--primary); }
+
+.photo-input-zone {
+  margin-bottom: 14px; display: none;
+}
+.photo-input-zone.active { display: block; }
+.photo-capture {
+  border: 2px dashed var(--primary); border-radius: 16px;
+  padding: 20px 16px; text-align: center;
+  background: var(--primary-light); cursor: pointer;
+  transition: all 0.2s;
+}
+.photo-capture:active { border-style: solid; }
+.photo-capture .pc-icon { font-size: 36px; margin-bottom: 6px; }
+.photo-capture .pc-text { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+.photo-capture .pc-sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.photo-preview {
+  margin-top: 10px; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); display: none;
+}
+.photo-preview img {
+  width: 100%; display: block;
+}
+.ocr-status {
+  text-align: center; padding: 10px; font-size: 13px;
+  color: var(--text-secondary); display: none;
+}
+</style>
+</head>
+<body>
+
+<!-- === CABECERA === -->
+<div class="header">
+  <div>
+    <h1>ENG-PRO</h1>
+    <div class="header-sub">Vocabulario profesional</div>
+  </div>
+  <button class="theme-btn" id="themeBtn" aria-label="Cambiar tema">☀️</button>
+</div>
+
+<!-- === CONTENIDO === -->
+<div class="content" id="mainContent">
+
+  <!-- PANTALLA: Documentos -->
+  <div class="screen active" id="screen-docs">
+    <!-- Selector de modo de entrada -->
+    <div class="input-modes">
+      <div class="input-mode-btn active" data-input="file">
+        <span class="imb-icon">📁</span>Archivo
+      </div>
+      <div class="input-mode-btn" data-input="text">
+        <span class="imb-icon">📋</span>Pegar texto
+      </div>
+      <div class="input-mode-btn" data-input="photo">
+        <span class="imb-icon">📷</span>Foto / OCR
+      </div>
+    </div>
+
+    <!-- Modo: Subir archivo -->
+    <div class="upload-zone active" id="uploadZone">
+      <div class="uz-icon">📁</div>
+      <div class="uz-text">Toca para subir documentos</div>
+      <div class="uz-formats">PDF · DOCX · TXT</div>
+    </div>
+    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" multiple hidden>
+
+    <!-- Modo: Pegar texto -->
+    <div class="text-input-zone" id="textInputZone">
+      <textarea id="pasteArea" placeholder="Pega aqui el texto en ingles del que quieres extraer vocabulario..."></textarea>
+      <button class="btn btn-primary btn-block" style="margin-top:8px;" id="btnProcessText">Extraer vocabulario del texto</button>
+    </div>
+
+    <!-- Modo: Foto / OCR -->
+    <div class="photo-input-zone" id="photoInputZone">
+      <div class="photo-capture" id="photoCapture">
+        <div class="pc-icon">📷</div>
+        <div class="pc-text">Toca para hacer foto o elegir imagen</div>
+        <div class="pc-sub">El texto se extraera automaticamente (OCR)</div>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+      <div class="photo-preview" id="photoPreview">
+        <img id="photoImg" alt="Preview">
+      </div>
+      <div class="ocr-status" id="ocrStatus">
+        <div class="spinner"></div>
+        <div style="margin-top:8px;">Extrayendo texto de la imagen...</div>
+      </div>
+    </div>
+
+    <div class="stat-row" id="statsRow">
+      <div><div class="stat-num" id="statTerms">0</div><div class="stat-label">Terminos</div></div>
+      <div><div class="stat-num" id="statDocs">0</div><div class="stat-label">Documentos</div></div>
+      <div><div class="stat-num" id="statMastery">0%</div><div class="stat-label">Dominio</div></div>
+    </div>
+
+    <div class="section-title">Documentos recientes</div>
+    <div id="docList">
+      <div class="empty-state">
+        <div class="es-icon">📄</div>
+        <div class="es-text">Sube tu primer documento para extraer vocabulario</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA: Revision de vocabulario -->
+  <div class="screen" id="screen-review">
+    <div class="review-head">
+      <button class="btn btn-sm btn-outline" id="btnBackDocs">← Volver</button>
+      <div class="review-count" id="reviewCount">0 candidatos</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="reviewProgress" style="width:0%"></div></div>
+    <div id="reviewList"></div>
+    <button class="btn btn-primary btn-block" id="btnSaveSelected" style="margin-top:8px; display:none;">
+      Guardar seleccionados
+    </button>
+  </div>
+
+  <!-- PANTALLA: Diccionario -->
+  <div class="screen" id="screen-dict">
+    <div class="dict-search">
+      <input class="input-field" id="dictSearch" placeholder="Buscar termino...">
+      <button class="btn btn-primary btn-sm" id="btnDictSearch">🔍</button>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <span class="filter-chip active" data-cat="all">Todos</span>
+    </div>
+    <div id="dictList"></div>
+    <div style="text-align:center; padding:8px; font-size:12px; color:var(--text-secondary);" id="dictCount"></div>
+  </div>
+
+  <!-- PANTALLA: Aprender -->
+  <div class="screen" id="screen-learn">
+    <div class="mode-grid" id="modeGrid">
+      <div class="mode-card active" data-mode="multiple">
+        <div class="mc-icon">🔤</div><div class="mc-name">Opcion multiple</div>
+      </div>
+      <div class="mode-card" data-mode="write">
+        <div class="mc-icon">✍️</div><div class="mc-name">Escribir</div>
+      </div>
+      <div class="mode-card" data-mode="context">
+        <div class="mc-icon">📝</div><div class="mc-name">Completar frase</div>
+      </div>
+      <div class="mode-card" data-mode="reverse">
+        <div class="mc-icon">🔄</div><div class="mc-name">ES → EN</div>
+      </div>
+    </div>
+
+    <!-- Selector de temas -->
+    <div class="topic-selector">
+      <div class="topic-toggle" id="topicToggle">
+        <span class="topic-toggle-label" id="topicLabel">Todos los temas</span>
+        <span class="topic-toggle-count" id="topicCount">▼</span>
+      </div>
+      <div class="topic-list" id="topicList"></div>
+    </div>
+
+    <div id="quizArea">
+      <div class="empty-state">
+        <div class="es-icon">🧠</div>
+        <div class="es-text">Agrega vocabulario al diccionario para empezar a practicar</div>
+      </div>
+    </div>
+
+    <div class="streak-bar" id="streakBar" style="display:none;">
+      <div class="streak" id="streakText">🔥 0 racha</div>
+      <div class="session-ct" id="sessionText">0 / 20 hoy</div>
+    </div>
+    <div class="progress-bar" id="learnProgressBar" style="display:none;">
+      <div class="progress-fill" id="learnProgress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- PANTALLA: Ajustes -->
+  <div class="screen" id="screen-settings">
+    <div class="sett-group">
+      <div class="sett-title">Apariencia</div>
+      <div class="card">
+        <div class="sett-item">
+          <div><div class="sett-label">Modo oscuro</div><div class="sett-desc">Tema dia / noche</div></div>
+          <div class="toggle" id="toggleTheme"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-group">
+      <div class="sett-title">Datos — Prioridad maxima</div>
+      <div class="warn-banner" id="backupWarning" style="display:none;">
+        ⚠️ <span id="backupWarningText"></span>
+      </div>
+      <div class="card export-btns">
+        <button class="btn btn-primary btn-block" id="btnExport">📤 Exportar base de datos (JSON)</button>
+        <button class="btn btn-outline btn-block" id="btnImport">📥 Importar base de datos</button>
+        <input type="file" id="importInput" accept=".json" hidden>
+        <div style="font-size:11px; color:var(--text-secondary); text-align:center; margin-top:4px;" id="backupInfo">
+          Sin backups aun
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-group">
+      <div class="sett-title">Aprendizaje</div>
+      <div class="card">
+        <div class="sett-item">
+          <div><div class="sett-label">Palabras por sesion</div><div class="sett-desc">Terminos en cada sesion</div></div>
+          <select class="input-field" id="wordsPerSession" style="width:70px; text-align:center;">
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20" selected>20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-group">
+      <div class="sett-title">Informacion</div>
+      <div class="card" style="text-align:center; padding:16px;">
+        <div style="font-size:18px; font-weight:800; color:var(--primary);">ENG-PRO</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">v1.0 · Tu vocabulario profesional</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- === MODAL: Detalle/Edicion === -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<!-- === TOAST === -->
+<div class="toast" id="toast"></div>
+
+<!-- === NAVEGACION INFERIOR === -->
+<div class="nav-bar">
+  <button class="nav-item active" data-screen="docs"><span class="ni">📄</span>Docs</button>
+  <button class="nav-item" data-screen="dict"><span class="ni">📖</span>Diccionario</button>
+  <button class="nav-item" data-screen="learn"><span class="ni">🧠</span>Aprender</button>
+  <button class="nav-item" data-screen="settings"><span class="ni">⚙️</span>Ajustes</button>
+</div>
+
+<script>
+/* ============================================
+   ENG-PRO — Logica principal
+   ============================================ */
+
+// ─── CONSTANTES ───
+const DB_NAME = 'EngProDB';
+const DB_VERSION = 1;
+// Stopwords en ingles (palabras muy comunes a filtrar)
+const STOPWORDS = new Set([
+  'the','be','to','of','and','a','in','that','have','i','it','for','not','on','with',
+  'he','as','you','do','at','this','but','his','by','from','they','we','her','she',
+  'or','an','will','my','one','all','would','there','their','what','so','up','out',
+  'if','about','who','get','which','go','me','when','make','can','like','time','no',
+  'just','him','know','take','people','into','year','your','good','some','could',
+  'them','see','other','than','then','now','look','only','come','its','over','think',
+  'also','back','after','use','two','how','our','work','first','well','way','even',
+  'new','want','because','any','these','give','day','most','us','is','are','was',
+  'were','been','being','has','had','did','does','doing','will','shall','should',
+  'may','might','must','can','could','would','am','is','are','was','were','said',
+  'each','tell','set','three','put','does','got','say','made','find','here',
+  'thing','many','very','much','need','more','own','those','start','end',
+  'while','still','before','through','long','down','where','such','right','left',
+  'same','another','last','too','under','between','never','again','off','always',
+  'however','part','around','every','during','keep','without','using','used',
+  'since','within','both','become','above','below','until','already','often',
+  'let','should','once','against','near','across','toward','along','next',
+  'enough','really','though','went','run','few','high','small','large','old',
+  'big','great','able','may','might','shall','must','yet','per','upon','also'
+]);
+
+// Palabras basicas ingles (top 2000 - no son vocabulario profesional)
+const BASIC_WORDS = new Set([
+  'hello','goodbye','yes','please','thank','sorry','help','stop','open','close',
+  'read','write','play','eat','drink','sleep','walk','run','talk','listen',
+  'house','car','book','door','window','table','chair','bed','food','water',
+  'money','school','family','friend','child','mother','father','brother','sister',
+  'happy','sad','good','bad','hot','cold','fast','slow','beautiful','ugly',
+  'red','blue','green','white','black','yellow','brown','orange','pink','color',
+  'number','letter','word','name','place','hand','head','face','body','eye',
+  'morning','night','today','tomorrow','yesterday','week','month','year','hour',
+  'minute','second','ask','answer','try','call','buy','sell','pay','show','move',
+  'live','die','wait','leave','return','begin','end','country','city','street',
+  'love','hate','feel','believe','remember','forget','learn','teach','speak',
+  'understand','mean','change','follow','lead','hold','bring','carry','stand',
+  'sit','turn','cut','fill','cover','draw','point','wear','watch','break',
+  'clean','clear','pick','pull','push','reach','send','fall','grow','happen',
+  'include','offer','pass','raise','stay','win','lose','catch','hit','fight'
+]);
+
+// ─── BASE DE DATOS (IndexedDB) ───
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      // Almacen de vocabulario
+      if (!d.objectStoreNames.contains('vocabulary')) {
+        const vs = d.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
+        vs.createIndex('term_en', 'term_en', { unique: false });
+        vs.createIndex('category', 'category', { unique: false });
+      }
+      // Almacen de progreso de aprendizaje
+      if (!d.objectStoreNames.contains('learning')) {
+        const ls = d.createObjectStore('learning', { keyPath: 'vocab_id' });
+        ls.createIndex('next_review', 'next_review', { unique: false });
+      }
+      // Almacen de documentos
+      if (!d.objectStoreNames.contains('documents')) {
+        d.createObjectStore('documents', { keyPath: 'id', autoIncrement: true });
+      }
+      // Configuracion
+      if (!d.objectStoreNames.contains('config')) {
+        d.createObjectStore('config', { keyPath: 'key' });
+      }
+    };
+    req.onsuccess = () => { db = req.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// Operaciones genericas sobre IndexedDB
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbAdd(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).add(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbDelete(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).delete(key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbClear(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).clear();
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ─── CONFIGURACION ───
+async function getConfig(key, defaultVal) {
+  const item = await dbGet('config', key);
+  return item ? item.value : defaultVal;
+}
+
+async function setConfig(key, value) {
+  await dbPut('config', { key, value });
+}
+
+// ─── UTILIDADES ───
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2500);
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if (diff === 0) return 'Hoy';
+  if (diff === 1) return 'Ayer';
+  if (diff < 7) return `Hace ${diff} dias`;
+  return d.toLocaleDateString('es-ES');
+}
+
+// ─── NAVEGACION ───
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navName = (name === 'review') ? 'docs' : name;
+  document.querySelector(`.nav-item[data-screen="${navName}"]`)?.classList.add('active');
+  document.getElementById('mainContent').scrollTop = 0;
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const screen = btn.dataset.screen;
+    showScreen(screen);
+    if (screen === 'dict') renderDictionary();
+    if (screen === 'learn') initLearnScreen();
+    if (screen === 'docs') refreshDocsScreen();
+    if (screen === 'settings') refreshSettings();
+  });
+});
+
+// ─── TEMA ───
+const themeBtn = document.getElementById('themeBtn');
+const toggleThemeEl = document.getElementById('toggleTheme');
+
+async function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  themeBtn.textContent = isDark ? '🌙' : '☀️';
+  toggleThemeEl.classList.toggle('on', isDark);
+  await setConfig('theme', isDark ? 'dark' : 'light');
+}
+
+themeBtn.addEventListener('click', toggleTheme);
+toggleThemeEl.addEventListener('click', toggleTheme);
+
+async function loadTheme() {
+  const theme = await getConfig('theme', 'light');
+  if (theme === 'dark') {
+    document.body.classList.add('dark');
+    themeBtn.textContent = '🌙';
+    toggleThemeEl.classList.add('on');
+  }
+}
+
+// ─── EXTRACCION DE TEXTO DE DOCUMENTOS ───
+
+// Extraer texto de PDF con pdf.js
+async function extractPDF(file) {
+  const arrayBuf = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+// Extraer texto de DOCX con mammoth
+async function extractDOCX(file) {
+  const arrayBuf = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer: arrayBuf });
+  return result.value;
+}
+
+// Leer archivo TXT
+async function extractTXT(file) {
+  return await file.text();
+}
+
+// Funcion principal de extraccion segun tipo
+async function extractText(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.pdf')) return await extractPDF(file);
+  if (name.endsWith('.docx')) return await extractDOCX(file);
+  if (name.endsWith('.txt')) return await extractTXT(file);
+  throw new Error('Formato no soportado: ' + name);
+}
+
+// ─── IMPORTACION DE BASE DE DATOS ESTRUCTURADA (TXT) ───
+
+// Mapa de secciones del archivo a categorias de la app
+const SECTION_CATEGORIES = {
+  'GLOSSARY: TECHNICAL ENGINEERING': 'Technical Engineering',
+  'TECHNICAL ENGINEERING': 'Technical Engineering',
+  'GLOSSARY: CORPORATE & MANAGEMENT': 'Corporate & Management',
+  'CORPORATE & MANAGEMENT': 'Corporate & Management',
+  'CONNECTORS & DISCOURSE MARKERS': 'Connectors',
+  'PROFESSIONAL PHRASE BANK': 'Phrase Bank',
+  'PRESENTATION STRUCTURES': 'Presentations',
+  'DIRECTOR-LEVEL AUTHORITY': 'Director-Level',
+  'FILLERS & TIME-BUYING': 'Fillers'
+};
+
+// Subcategorias dentro de Phrase Bank y Presentations
+const SUB_CATEGORIES = {
+  'ENGINEERING & COORDINATION': 'Phrase Bank — Engineering',
+  'COLLABORATION & TEAMWORK': 'Phrase Bank — Collaboration',
+  'PROBLEMS & CHALLENGES': 'Phrase Bank — Problems',
+  'INTRODUCING TOPICS': 'Presentations — Intro',
+  'EXPLAINING PROGRESS': 'Presentations — Progress',
+  'CLOSING TOPICS': 'Presentations — Closing'
+};
+
+// Detectar si un texto tiene formato de base de datos estructurada
+function isStructuredDB(text) {
+  // Buscar al menos 2 lineas con === (separadores de seccion)
+  const separators = (text.match(/^=+$/gm) || []).length;
+  return separators >= 2;
+}
+
+// Parsear la base de datos estructurada y devolver candidatos categorizados
+function parseStructuredDB(text) {
+  const lines = text.split('\n');
+  const results = [];
+  let currentCategory = 'General';
+  let currentSubCategory = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    // Detectar linea de separacion (===) -> la linea anterior es el titulo de seccion
+    if (/^=+$/.test(line)) continue;
+
+    // Detectar titulo de seccion principal (la siguiente linea es ===)
+    const nextLine = (i + 1 < lines.length) ? lines[i + 1].trim() : '';
+    if (/^=+$/.test(nextLine)) {
+      // Buscar a que categoria corresponde
+      const upper = line.toUpperCase();
+      for (const [key, cat] of Object.entries(SECTION_CATEGORIES)) {
+        if (upper.includes(key)) {
+          currentCategory = cat;
+          currentSubCategory = '';
+          break;
+        }
+      }
+      continue;
+    }
+
+    // Detectar subcategoria [ENTRE CORCHETES]
+    const subMatch = line.match(/^\[(.+)\]$/);
+    if (subMatch) {
+      const subName = subMatch[1].toUpperCase();
+      for (const [key, sub] of Object.entries(SUB_CATEGORIES)) {
+        if (subName.includes(key)) {
+          currentSubCategory = sub;
+          break;
+        }
+      }
+      if (!currentSubCategory) {
+        currentSubCategory = currentCategory + ' — ' + subMatch[1];
+      }
+      continue;
+    }
+
+    // Saltar lineas de encabezado del archivo
+    if (line.startsWith('ESTRUCTURA DE CAMPOS') || line.startsWith('CAMPOS INCLUIDOS')) continue;
+    // Saltar lineas que solo son nombres de seccion sin ===
+    let isMenuEntry = false;
+    for (const key of Object.keys(SECTION_CATEGORIES)) {
+      if (line.toUpperCase().includes(key) && line.length < 60) { isMenuEntry = true; break; }
+    }
+    if (isMenuEntry && i < 20) continue; // solo en las primeras lineas (indice)
+
+    // Determinar categoria final
+    const finalCategory = currentSubCategory || currentCategory;
+
+    // Parsear segun formato
+    // Formato 1: "Termino: Traduccion." (glosario)
+    // Formato 2: "Termino (SIGLA): Traduccion." (con acronimo)
+    // Formato 3: "Frase completa entre comillas" (phrase bank)
+
+    // Detectar frase entre comillas
+    const phraseMatch = line.match(/^"(.+)"\.?$/);
+    if (phraseMatch) {
+      results.push({
+        term_en: phraseMatch[1],
+        term_es: '',
+        meaning: '',
+        example_sentences: [],
+        category: finalCategory,
+        difficulty_score: 0.6,
+        source_document: 'Data Base.txt'
+      });
+      continue;
+    }
+
+    // Detectar formato glosario "Termino: Traduccion"
+    const glossaryMatch = line.match(/^(.+?):\s+(.+?)\.?$/);
+    if (glossaryMatch) {
+      const termEn = glossaryMatch[1].trim();
+      const termEs = glossaryMatch[2].trim().replace(/\.$/, '');
+
+      // Evitar lineas que no son terminos reales
+      if (termEn.length < 2 || termEs.length < 2) continue;
+      if (termEn.toUpperCase() === termEn && termEn.length > 40) continue; // titulo de seccion
+
+      results.push({
+        term_en: termEn,
+        term_es: termEs,
+        meaning: '',
+        example_sentences: [],
+        category: finalCategory,
+        difficulty_score: 0.5,
+        source_document: 'Data Base.txt'
+      });
+    }
+  }
+
+  return results;
+}
+
+// ─── EXTRACCION DE VOCABULARIO (NLP en JS) ───
+
+function tokenize(text) {
+  // Dividir en oraciones para contexto
+  const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
+  // Dividir en tokens
+  const words = text.toLowerCase().replace(/[^a-z\s'-]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+  return { words, sentences };
+}
+
+function extractCandidates(text) {
+  const { words, sentences } = tokenize(text);
+  const candidates = new Map(); // termino -> { count, sentences }
+
+  // 1. Contar frecuencia de palabras individuales
+  const freq = new Map();
+  words.forEach(w => {
+    if (!STOPWORDS.has(w) && !BASIC_WORDS.has(w) && w.length > 3 && !/^\d+$/.test(w)) {
+      freq.set(w, (freq.get(w) || 0) + 1);
+    }
+  });
+
+  // 2. Detectar bigramas y trigramas (expresiones multipalabra)
+  const cleanWords = text.toLowerCase().replace(/[^a-z\s'-]/g, ' ').split(/\s+/);
+  for (let i = 0; i < cleanWords.length - 1; i++) {
+    const w1 = cleanWords[i], w2 = cleanWords[i + 1];
+    if (w1.length > 2 && w2.length > 2 && !STOPWORDS.has(w1) && !STOPWORDS.has(w2)) {
+      const bigram = w1 + ' ' + w2;
+      if (!candidates.has(bigram)) candidates.set(bigram, { count: 0, sentences: [] });
+      candidates.get(bigram).count++;
+    }
+    // Trigramas (con preposicion en medio permitida)
+    if (i < cleanWords.length - 2) {
+      const w3 = cleanWords[i + 2];
+      if (w1.length > 2 && w3.length > 2 && !STOPWORDS.has(w1) && !STOPWORDS.has(w3)) {
+        const trigram = w1 + ' ' + w2 + ' ' + w3;
+        if (!candidates.has(trigram)) candidates.set(trigram, { count: 0, sentences: [] });
+        candidates.get(trigram).count++;
+      }
+    }
+  }
+
+  // 3. Agregar palabras individuales relevantes (frecuencia >= 2 o sufijo profesional)
+  const profSuffixes = ['tion','ment','ness','ity','ance','ence','ism','ist','ive','ous','ial','ual','able','ible'];
+  freq.forEach((count, word) => {
+    const hasProfSuffix = profSuffixes.some(s => word.endsWith(s));
+    if (count >= 2 || hasProfSuffix) {
+      if (!candidates.has(word)) candidates.set(word, { count: 0, sentences: [] });
+      candidates.get(word).count += count;
+    }
+  });
+
+  // 4. Buscar frases de ejemplo para cada candidato
+  candidates.forEach((data, term) => {
+    for (const sent of sentences) {
+      if (sent.toLowerCase().includes(term) && data.sentences.length < 2) {
+        data.sentences.push(sent.trim());
+      }
+    }
+  });
+
+  // 5. Filtrar y ordenar por relevancia
+  const result = [];
+  candidates.forEach((data, term) => {
+    if (term.length < 4) return;
+    if (data.count < 1) return;
+    const wordCount = term.split(' ').length;
+    let score = data.count * 0.3 + wordCount * 0.4 + term.length * 0.05;
+    if (profSuffixes.some(s => term.endsWith(s))) score += 0.3;
+    result.push({
+      term_en: term,
+      term_es: '',
+      meaning: '',
+      example_sentences: data.sentences,
+      count: data.count,
+      difficulty_score: Math.min(1, score / 5)
+    });
+  });
+
+  // 6. Eliminar duplicados y subconjuntos
+  // Si "risk" y "risk assessment" existen, preferir "risk assessment"
+  // Si "risk assessment" y "risk assessment before" existen, preferir el mas relevante
+  result.sort((a, b) => b.difficulty_score - a.difficulty_score);
+
+  const filtered = [];
+  const usedTerms = new Set();
+
+  for (const item of result) {
+    const term = item.term_en.toLowerCase();
+
+    // Saltar si este termino ya fue cubierto por otro mas largo/relevante
+    let isSubset = false;
+    for (const used of usedTerms) {
+      // Si el termino es parte de uno ya aceptado, o viceversa
+      if (used.includes(term) || term.includes(used)) {
+        // Preferir el mas largo (expresion multipalabra) si tiene buena frecuencia
+        if (used.includes(term)) {
+          isSubset = true; // ya hay uno mas largo que lo contiene
+          break;
+        }
+      }
+    }
+    if (isSubset) continue;
+
+    // Eliminar terminos previamente aceptados que son subconjunto de este
+    const toRemove = [];
+    for (const used of usedTerms) {
+      if (term.includes(used) && term !== used) {
+        toRemove.push(used);
+      }
+    }
+    // Solo reemplazar si el nuevo tiene al menos la misma frecuencia
+    if (toRemove.length > 0) {
+      toRemove.forEach(r => usedTerms.delete(r));
+      // Eliminar de filtered tambien
+      for (let i = filtered.length - 1; i >= 0; i--) {
+        if (toRemove.includes(filtered[i].term_en.toLowerCase())) {
+          filtered.splice(i, 1);
+        }
+      }
+    }
+
+    usedTerms.add(term);
+    filtered.push(item);
+  }
+
+  return filtered.slice(0, 50);
+}
+
+// ─── PANTALLA: DOCUMENTOS ───
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const textInputZone = document.getElementById('textInputZone');
+const photoInputZone = document.getElementById('photoInputZone');
+const photoInput = document.getElementById('photoInput');
+const photoCapture = document.getElementById('photoCapture');
+
+// Selector de modo de entrada
+document.querySelectorAll('.input-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.input-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.input;
+    // Mostrar/ocultar zonas
+    uploadZone.classList.toggle('active', mode === 'file');
+    uploadZone.style.display = mode === 'file' ? '' : 'none';
+    textInputZone.classList.toggle('active', mode === 'text');
+    photoInputZone.classList.toggle('active', mode === 'photo');
+  });
+});
+
+// --- Modo ARCHIVO ---
+uploadZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', handleFiles);
+
+// Soporte drag & drop
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderStyle = 'solid'; });
+uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderStyle = 'dashed'; });
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.style.borderStyle = 'dashed';
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    handleFiles();
+  }
+});
+
+async function handleFiles() {
+  const files = fileInput.files;
+  if (!files.length) return;
+
+  for (const file of files) {
+    toast('Procesando ' + file.name + '...');
+    try {
+      const text = await extractText(file);
+      await processExtractedText(text, file.name);
+    } catch (err) {
+      toast('Error procesando ' + file.name + ': ' + err.message);
+      console.error(err);
+    }
+  }
+  fileInput.value = '';
+}
+
+// --- Modo PEGAR TEXTO ---
+document.getElementById('btnProcessText').addEventListener('click', async () => {
+  const textarea = document.getElementById('pasteArea');
+  const text = textarea.value.trim();
+  if (!text) {
+    toast('Pega un texto primero');
+    return;
+  }
+  if (text.split(/\s+/).length < 5) {
+    toast('El texto es demasiado corto');
+    return;
+  }
+  toast('Procesando texto pegado...');
+  await processExtractedText(text, 'Texto pegado');
+  textarea.value = '';
+});
+
+// --- Modo FOTO / OCR ---
+photoCapture.addEventListener('click', () => photoInput.click());
+photoInput.addEventListener('change', handlePhoto);
+
+async function handlePhoto() {
+  const file = photoInput.files[0];
+  if (!file) return;
+
+  // Mostrar preview de la imagen
+  const preview = document.getElementById('photoPreview');
+  const img = document.getElementById('photoImg');
+  const status = document.getElementById('ocrStatus');
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    img.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  // Iniciar OCR
+  status.style.display = 'block';
+  toast('Extrayendo texto de la imagen...');
+
+  try {
+    const worker = await Tesseract.createWorker('eng');
+    const { data } = await worker.recognize(file);
+    await worker.terminate();
+
+    const text = data.text.trim();
+    status.style.display = 'none';
+
+    if (!text || text.length < 10) {
+      toast('No se pudo extraer texto suficiente de la imagen');
+      return;
+    }
+
+    toast(`Texto extraido (${text.split(/\s+/).length} palabras). Procesando...`);
+    await processExtractedText(text, 'Foto OCR');
+    // Limpiar preview
+    preview.style.display = 'none';
+  } catch (err) {
+    status.style.display = 'none';
+    toast('Error en OCR: ' + err.message);
+    console.error(err);
+  }
+
+  photoInput.value = '';
+}
+
+// --- Funcion comun para procesar texto extraido ---
+async function processExtractedText(text, sourceName) {
+  let candidates;
+
+  // Detectar si es una base de datos estructurada (formato con secciones ===)
+  if (isStructuredDB(text)) {
+    candidates = parseStructuredDB(text);
+    toast(`Base de datos detectada: ${candidates.length} entradas encontradas`);
+  } else {
+    candidates = extractCandidates(text);
+  }
+
+  // Filtrar candidatos que ya existen en el diccionario (coincidencia exacta)
+  const existing = await dbGetAll('vocabulary');
+  const existingTerms = existing.map(v => v.term_en.toLowerCase());
+  const newCandidates = candidates.filter(c => {
+    const term = c.term_en.toLowerCase();
+    return !existingTerms.includes(term);
+  });
+
+  if (newCandidates.length === 0) {
+    toast('Todos los terminos de ' + sourceName + ' ya existen en el diccionario');
+    refreshDocsScreen();
+    return;
+  }
+
+  // Guardar documento en DB
+  await dbAdd('documents', {
+    filename: sourceName,
+    upload_date: new Date().toISOString(),
+    word_count: text.split(/\s+/).length,
+    terms_extracted: newCandidates.length
+  });
+
+  // Mostrar pantalla de revision
+  showReviewScreen(newCandidates, sourceName);
+}
+
+async function refreshDocsScreen() {
+  const docs = await dbGetAll('documents');
+  const vocab = await dbGetAll('vocabulary');
+  const learning = await dbGetAll('learning');
+
+  // Estadisticas
+  document.getElementById('statTerms').textContent = vocab.length;
+  document.getElementById('statDocs').textContent = docs.length;
+  // Calcular dominio
+  if (learning.length > 0) {
+    const mastered = learning.filter(l => l.correct_count >= 3 && l.ease_factor >= 2.0).length;
+    const pct = Math.round((mastered / vocab.length) * 100) || 0;
+    document.getElementById('statMastery').textContent = pct + '%';
+  } else {
+    document.getElementById('statMastery').textContent = '0%';
+  }
+
+  // Lista de documentos
+  const container = document.getElementById('docList');
+  if (docs.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">📄</div><div class="es-text">Sube tu primer documento para extraer vocabulario</div></div>';
+    return;
+  }
+  docs.sort((a, b) => new Date(b.upload_date) - new Date(a.upload_date));
+  container.innerHTML = docs.map(d => {
+    const ext = d.filename.split('.').pop().toLowerCase();
+    const icon = ext === 'pdf' ? '📄' : ext === 'docx' ? '📝' : '📃';
+    return `<div class="card">
+      <div class="doc-item">
+        <div class="doc-icon">${icon}</div>
+        <div class="doc-info">
+          <div class="doc-name">${escapeHtml(d.filename)}</div>
+          <div class="doc-meta">${d.terms_extracted} terminos · ${formatDate(d.upload_date)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+// ─── TRADUCCION Y SIGNIFICADO AUTOMATICOS ───
+
+// Traducir termino EN->ES con MyMemory API (gratis, sin clave)
+async function autoTranslate(term) {
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(term)}&langpair=en|es`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.responseStatus === 200 && data.responseData.translatedText) {
+      const translated = data.responseData.translatedText;
+      // MyMemory a veces devuelve el mismo texto si no encuentra traduccion
+      if (translated.toLowerCase() !== term.toLowerCase()) {
+        return translated.toLowerCase();
+      }
+    }
+    return '';
+  } catch (e) {
+    console.log('Error traduciendo:', term, e);
+    return '';
+  }
+}
+
+// Obtener significado/definicion con Free Dictionary API (gratis, sin clave)
+async function autoMeaning(term) {
+  try {
+    // La API funciona mejor con palabras individuales
+    const word = term.split(' ')[0]; // usar primera palabra si es multipalabra
+    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(term)}`;
+    const res = await fetch(url);
+    if (!res.ok) return '';
+    const data = await res.json();
+    if (data && data[0] && data[0].meanings && data[0].meanings[0]) {
+      const def = data[0].meanings[0].definitions[0];
+      return def ? def.definition : '';
+    }
+    return '';
+  } catch (e) {
+    console.log('Error obteniendo significado:', term, e);
+    return '';
+  }
+}
+
+// Buscar traduccion y significado para un termino y actualizar el campo
+async function fetchTermInfo(term, index) {
+  const esInput = document.getElementById('review-es-' + index);
+  const meaningEl = document.getElementById('review-meaning-' + index);
+  const statusEl = document.getElementById('review-status-' + index);
+
+  if (statusEl) statusEl.textContent = 'Buscando traduccion...';
+
+  // Lanzar ambas busquedas en paralelo
+  const [translation, meaning] = await Promise.all([
+    autoTranslate(term),
+    autoMeaning(term)
+  ]);
+
+  if (esInput && translation && !esInput.value) {
+    esInput.value = translation;
+  }
+  if (meaningEl && meaning) {
+    meaningEl.value = meaning;
+  }
+  if (statusEl) {
+    statusEl.textContent = translation ? '✓ Traduccion encontrada' : '⚠ Sin traduccion automatica';
+    statusEl.style.color = translation ? 'var(--success)' : 'var(--warning)';
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+  }
+}
+
+// ─── PANTALLA: REVISION ───
+
+let reviewCandidates = [];
+let reviewAccepted = new Set();
+
+function showReviewScreen(candidates, filename) {
+  reviewCandidates = candidates;
+  reviewAccepted = new Set();
+  showScreen('review');
+
+  // Recopilar todas las categorias unicas de los candidatos
+  const allCategories = new Set(['General', 'Business', 'Technical', 'Legal', 'Engineering', 'Finance']);
+  candidates.forEach(c => { if (c.category) allCategories.add(c.category); });
+  const catOptions = [...allCategories].sort().map(c => `<option value="${c}">${c}</option>`).join('');
+
+  document.getElementById('reviewCount').textContent = candidates.length + ' candidatos';
+  const container = document.getElementById('reviewList');
+
+  // Boton para aceptar todos de golpe (util para bases de datos)
+  container.innerHTML = `<div style="display:flex; gap:8px; margin-bottom:10px;">
+    <button class="btn btn-sm btn-success btn-block" onclick="acceptAllTerms()">✓ Aceptar todos</button>
+    <button class="btn btn-sm btn-danger btn-block" onclick="rejectAllTerms()">✕ Rechazar todos</button>
+  </div>` + candidates.map((c, i) => {
+    const ctx = c.example_sentences && c.example_sentences.length > 0
+      ? `<div class="term-ctx">"...${escapeHtml(c.example_sentences[0].substring(0, 120))}..."</div>`
+      : '';
+    const hasTrans = c.term_es ? true : false;
+    const esPlaceholder = hasTrans ? '' : 'Buscando traduccion...';
+    // Seleccionar la categoria que viene del parser
+    const catOptionsWithSelected = [...allCategories].sort().map(cat =>
+      `<option value="${cat}" ${c.category === cat ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+
+    return `<div class="card" id="review-card-${i}" style="border-left:3px solid var(--border);">
+      <div class="term-en">${escapeHtml(c.term_en)}</div>
+      ${ctx}
+      <div class="term-label">Traduccion al espanol:</div>
+      <input class="input-field" id="review-es-${i}" placeholder="${esPlaceholder}" value="${escapeHtml(c.term_es || '')}">
+      <div style="margin-top:6px;">
+        <div class="term-label">Significado (ingles):</div>
+        <input class="input-field" id="review-meaning-${i}" placeholder="Buscando significado..." value="${escapeHtml(c.meaning || '')}">
+      </div>
+      <div id="review-status-${i}" style="font-size:11px; margin-top:4px; min-height:16px;"></div>
+      <div style="margin-top:6px;">
+        <div class="term-label">Categoria:</div>
+        <select class="input-field" id="review-cat-${i}" style="padding:8px;">
+          ${catOptionsWithSelected}
+        </select>
+      </div>
+      <div class="term-actions">
+        <button class="btn btn-sm btn-success" onclick="acceptTerm(${i})">✓ Aceptar</button>
+        <button class="btn btn-sm btn-danger" onclick="rejectTerm(${i})">✕ Rechazar</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateReviewUI();
+  document.getElementById('btnSaveSelected').style.display = 'block';
+
+  // Buscar traducciones y significados solo para los que no tienen traduccion
+  candidates.forEach((c, i) => {
+    if (!c.term_es) {
+      setTimeout(() => fetchTermInfo(c.term_en, i), i * 200);
+    } else {
+      // Ya tiene traduccion (viene del parser), solo buscar significado
+      setTimeout(() => fetchMeaningOnly(c.term_en, i), i * 200);
+    }
+  });
+}
+
+// Buscar solo significado (cuando ya tenemos traduccion del parser)
+async function fetchMeaningOnly(term, index) {
+  const meaningEl = document.getElementById('review-meaning-' + index);
+  const meaning = await autoMeaning(term);
+  if (meaningEl && meaning && !meaningEl.value) {
+    meaningEl.value = meaning;
+  }
+}
+
+// Aceptar todos los candidatos de una vez
+function acceptAllTerms() {
+  for (let i = 0; i < reviewCandidates.length; i++) {
+    reviewAccepted.add(i);
+    const card = document.getElementById('review-card-' + i);
+    if (card) {
+      card.style.borderLeftColor = 'var(--success)';
+      card.style.opacity = '0.85';
+    }
+  }
+  updateReviewUI();
+  toast('Todos los terminos aceptados');
+}
+
+// Rechazar todos los candidatos
+function rejectAllTerms() {
+  reviewAccepted.clear();
+  for (let i = 0; i < reviewCandidates.length; i++) {
+    const card = document.getElementById('review-card-' + i);
+    if (card) {
+      card.style.borderLeftColor = 'var(--danger)';
+      card.style.opacity = '0.5';
+    }
+  }
+  updateReviewUI();
+}
+
+window.acceptAllTerms = acceptAllTerms;
+window.rejectAllTerms = rejectAllTerms;
+
+function acceptTerm(i) {
+  reviewAccepted.add(i);
+  const card = document.getElementById('review-card-' + i);
+  card.style.borderLeftColor = 'var(--success)';
+  card.style.opacity = '0.85';
+  updateReviewUI();
+}
+
+function rejectTerm(i) {
+  reviewAccepted.delete(i);
+  const card = document.getElementById('review-card-' + i);
+  card.style.borderLeftColor = 'var(--danger)';
+  card.style.opacity = '0.5';
+  updateReviewUI();
+}
+
+function updateReviewUI() {
+  const accepted = reviewAccepted.size;
+  const total = reviewCandidates.length;
+  document.getElementById('reviewProgress').style.width = (total > 0 ? (accepted / total) * 100 : 0) + '%';
+  const btn = document.getElementById('btnSaveSelected');
+  btn.textContent = `Guardar seleccionados (${accepted})`;
+  btn.disabled = accepted === 0;
+}
+
+document.getElementById('btnBackDocs').addEventListener('click', () => {
+  showScreen('docs');
+  refreshDocsScreen();
+});
+
+document.getElementById('btnSaveSelected').addEventListener('click', async () => {
+  let saved = 0;
+  for (const i of reviewAccepted) {
+    const c = reviewCandidates[i];
+    const termEs = document.getElementById('review-es-' + i).value.trim();
+    const meaning = document.getElementById('review-meaning-' + i).value.trim();
+    const category = document.getElementById('review-cat-' + i).value;
+
+    const vocabId = await dbAdd('vocabulary', {
+      term_en: c.term_en,
+      term_es: termEs,
+      meaning: meaning || c.meaning || '',
+      example_sentences: JSON.stringify(c.example_sentences),
+      source_document: c.source_document || '',
+      category: category,
+      date_added: new Date().toISOString(),
+      difficulty_score: c.difficulty_score || 0.5
+    });
+
+    // Crear registro de aprendizaje
+    await dbPut('learning', {
+      vocab_id: vocabId,
+      last_reviewed: null,
+      next_review: new Date().toISOString(),
+      ease_factor: 2.5,
+      interval_days: 1,
+      correct_count: 0,
+      incorrect_count: 0
+    });
+
+    saved++;
+  }
+
+  toast(`${saved} terminos guardados en el diccionario`);
+  await setConfig('last_backup_reminder', new Date().toISOString());
+  showScreen('docs');
+  refreshDocsScreen();
+});
+
+// ─── PANTALLA: DICCIONARIO ───
+
+let dictFilter = 'all';
+let dictSearchTerm = '';
+
+document.getElementById('dictSearch').addEventListener('input', (e) => {
+  dictSearchTerm = e.target.value.trim().toLowerCase();
+  renderDictionary();
+});
+document.getElementById('btnDictSearch').addEventListener('click', () => renderDictionary());
+
+async function renderDictionary() {
+  let vocab = await dbGetAll('vocabulary');
+
+  // Construir filtros de categoria
+  const categories = [...new Set(vocab.map(v => v.category).filter(Boolean))];
+  const filterRow = document.getElementById('filterRow');
+  filterRow.innerHTML = `<span class="filter-chip ${dictFilter === 'all' ? 'active' : ''}" data-cat="all">Todos</span>` +
+    categories.map(c => `<span class="filter-chip ${dictFilter === c ? 'active' : ''}" data-cat="${c}">${c}</span>`).join('');
+
+  filterRow.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      dictFilter = chip.dataset.cat;
+      renderDictionary();
+    });
+  });
+
+  // Aplicar filtros
+  if (dictFilter !== 'all') {
+    vocab = vocab.filter(v => v.category === dictFilter);
+  }
+  if (dictSearchTerm) {
+    vocab = vocab.filter(v =>
+      v.term_en.toLowerCase().includes(dictSearchTerm) ||
+      (v.term_es && v.term_es.toLowerCase().includes(dictSearchTerm))
+    );
+  }
+
+  // Ordenar alfabeticamente
+  vocab.sort((a, b) => a.term_en.localeCompare(b.term_en));
+
+  const container = document.getElementById('dictList');
+  if (vocab.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">📖</div><div class="es-text">No hay terminos todavia</div></div>';
+    document.getElementById('dictCount').textContent = '';
+    return;
+  }
+
+  container.innerHTML = vocab.map(v => {
+    const diff = v.difficulty_score;
+    const diffClass = diff > 0.7 ? 'diff-hard' : diff > 0.4 ? 'diff-medium' : 'diff-easy';
+    const diffLabel = diff > 0.7 ? 'Dificil' : diff > 0.4 ? 'Media' : 'Facil';
+    return `<div class="card" style="cursor:pointer;" onclick="showVocabDetail(${v.id})">
+      <div class="vocab-en">${escapeHtml(v.term_en)}</div>
+      <div class="vocab-es">${escapeHtml(v.term_es || '(sin traduccion)')}</div>
+      <div class="vocab-badges">
+        ${v.category ? `<span class="badge">${v.category}</span>` : ''}
+        <span class="diff-dot ${diffClass}" title="${diffLabel}"></span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const allVocab = await dbGetAll('vocabulary');
+  document.getElementById('dictCount').textContent = allVocab.length + ' terminos en total';
+}
+
+// Modal detalle de vocabulario
+async function showVocabDetail(id) {
+  const v = await dbGet('vocabulary', id);
+  if (!v) return;
+  const learning = await dbGet('learning', id);
+  let examples = [];
+  try { examples = JSON.parse(v.example_sentences || '[]'); } catch(e) {}
+
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h3 style="color:var(--primary);">${escapeHtml(v.term_en)}</h3>
+    <div class="detail-field">
+      <div class="detail-label">Traduccion</div>
+      <input class="input-field" id="edit-es" value="${escapeHtml(v.term_es || '')}">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Significado</div>
+      <input class="input-field" id="edit-meaning" value="${escapeHtml(v.meaning || '')}">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Categoria</div>
+      <select class="input-field" id="edit-cat">
+        ${['General','Business','Technical','Legal','Engineering','Finance'].map(c =>
+          `<option value="${c}" ${v.category === c ? 'selected' : ''}>${c}</option>`
+        ).join('')}
+      </select>
+    </div>
+    ${examples.length > 0 ? `
+    <div class="detail-field">
+      <div class="detail-label">Ejemplos</div>
+      ${examples.map(e => `<div class="term-ctx">"${escapeHtml(e.substring(0, 150))}"</div>`).join('')}
+    </div>` : ''}
+    ${learning ? `
+    <div class="detail-field">
+      <div class="detail-label">Progreso</div>
+      <div style="font-size:12px; color:var(--text-secondary); line-height:1.8;">
+        Correctas: ${learning.correct_count} · Incorrectas: ${learning.incorrect_count}<br>
+        Factor facilidad: ${learning.ease_factor.toFixed(2)}<br>
+        Proxima revision: ${formatDate(learning.next_review)}
+      </div>
+    </div>` : ''}
+    <div style="font-size:11px; color:var(--text-secondary); margin-bottom:10px;">
+      Fuente: ${escapeHtml(v.source_document || 'Manual')} · Agregado: ${formatDate(v.date_added)}
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-primary btn-block" onclick="saveVocabEdit(${id})">Guardar</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteVocab(${id})">🗑️</button>
+    </div>
+    <button class="btn btn-outline btn-block" style="margin-top:6px;" onclick="closeModal()">Cerrar</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+async function saveVocabEdit(id) {
+  const v = await dbGet('vocabulary', id);
+  v.term_es = document.getElementById('edit-es').value.trim();
+  v.meaning = document.getElementById('edit-meaning').value.trim();
+  v.category = document.getElementById('edit-cat').value;
+  await dbPut('vocabulary', v);
+  toast('Termino actualizado');
+  closeModal();
+  renderDictionary();
+}
+
+async function deleteVocab(id) {
+  if (!confirm('¿Eliminar este termino del diccionario?')) return;
+  await dbDelete('vocabulary', id);
+  await dbDelete('learning', id);
+  toast('Termino eliminado');
+  closeModal();
+  renderDictionary();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+// Exponer funciones globales para onclick inline
+window.showVocabDetail = showVocabDetail;
+window.saveVocabEdit = saveVocabEdit;
+window.deleteVocab = deleteVocab;
+window.closeModal = closeModal;
+window.acceptTerm = acceptTerm;
+window.rejectTerm = rejectTerm;
+
+// ─── PANTALLA: APRENDER (SM-2) ───
+
+let currentMode = 'multiple';
+let currentQuiz = null;
+let sessionCorrect = 0;
+let sessionTotal = 0;
+let streak = 0;
+let selectedTopics = new Set(); // vacio = todos los temas
+let topicListOpen = false;
+
+// Selector de modo
+document.getElementById('modeGrid').addEventListener('click', (e) => {
+  const card = e.target.closest('.mode-card');
+  if (!card) return;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  currentMode = card.dataset.mode;
+  loadNextQuestion();
+});
+
+// Toggle del selector de temas
+document.getElementById('topicToggle').addEventListener('click', () => {
+  topicListOpen = !topicListOpen;
+  document.getElementById('topicList').classList.toggle('open', topicListOpen);
+  document.getElementById('topicCount').textContent = topicListOpen ? '▲' : '▼';
+});
+
+// Construir lista de temas disponibles
+async function buildTopicList() {
+  const vocab = await dbGetAll('vocabulary');
+  const topicMap = new Map(); // categoria -> cantidad
+
+  vocab.forEach(v => {
+    const cat = v.category || 'General';
+    topicMap.set(cat, (topicMap.get(cat) || 0) + 1);
+  });
+
+  const topics = [...topicMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const totalTerms = vocab.length;
+  const container = document.getElementById('topicList');
+
+  // Opcion "Todos"
+  const allSelected = selectedTopics.size === 0;
+  let html = `<div class="topic-item ${allSelected ? 'selected' : ''}" data-topic="__all__">
+    <div class="topic-check">${allSelected ? '✓' : ''}</div>
+    <div class="topic-name"><b>Todos los temas</b></div>
+    <div class="topic-count">${totalTerms}</div>
+  </div>`;
+
+  for (const [cat, count] of topics) {
+    const isSelected = allSelected || selectedTopics.has(cat);
+    html += `<div class="topic-item ${isSelected ? 'selected' : ''}" data-topic="${escapeHtml(cat)}">
+      <div class="topic-check">${isSelected ? '✓' : ''}</div>
+      <div class="topic-name">${escapeHtml(cat)}</div>
+      <div class="topic-count">${count}</div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+
+  // Eventos de click en cada tema
+  container.querySelectorAll('.topic-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const topic = item.dataset.topic;
+      if (topic === '__all__') {
+        // Seleccionar todos (limpiar filtro)
+        selectedTopics.clear();
+      } else {
+        if (selectedTopics.has(topic)) {
+          selectedTopics.delete(topic);
+        } else {
+          selectedTopics.add(topic);
+        }
+      }
+      // Si se seleccionan todos manualmente, equivale a "Todos"
+      if (selectedTopics.size === topics.length) {
+        selectedTopics.clear();
+      }
+      updateTopicLabel();
+      buildTopicList();
+      loadNextQuestion();
+    });
+  });
+
+  updateTopicLabel();
+}
+
+function updateTopicLabel() {
+  const label = document.getElementById('topicLabel');
+  if (selectedTopics.size === 0) {
+    label.textContent = 'Todos los temas';
+  } else if (selectedTopics.size === 1) {
+    label.textContent = [...selectedTopics][0];
+  } else {
+    label.textContent = selectedTopics.size + ' temas seleccionados';
+  }
+}
+
+// Filtrar vocabulario segun temas seleccionados
+function filterByTopics(vocabList) {
+  if (selectedTopics.size === 0) return vocabList;
+  return vocabList.filter(v => selectedTopics.has(v.category || 'General'));
+}
+
+async function initLearnScreen() {
+  const vocab = await dbGetAll('vocabulary');
+  if (vocab.length < 2) {
+    document.getElementById('quizArea').innerHTML =
+      '<div class="empty-state"><div class="es-icon">🧠</div><div class="es-text">Necesitas al menos 2 terminos en el diccionario para practicar</div></div>';
+    document.getElementById('streakBar').style.display = 'none';
+    document.getElementById('learnProgressBar').style.display = 'none';
+    return;
+  }
+  document.getElementById('streakBar').style.display = 'flex';
+  document.getElementById('learnProgressBar').style.display = 'block';
+  sessionCorrect = 0;
+  sessionTotal = 0;
+  streak = 0;
+  await buildTopicList();
+  loadNextQuestion();
+}
+
+async function loadNextQuestion() {
+  const allVocab = await dbGetAll('vocabulary');
+  // Filtrar por temas seleccionados
+  const topicFiltered = filterByTopics(allVocab);
+  // Para modos que requieren traduccion, filtrar solo los que tengan term_es
+  const needsTranslation = ['multiple', 'reverse', 'write'].includes(currentMode);
+  const vocab = needsTranslation ? topicFiltered.filter(v => v.term_es) : topicFiltered;
+
+  if (vocab.length < 2) {
+    document.getElementById('quizArea').innerHTML =
+      '<div class="empty-state"><div class="es-icon">🧠</div><div class="es-text">Necesitas al menos 2 terminos con traduccion en los temas seleccionados</div></div>';
+    return;
+  }
+
+  const learning = await dbGetAll('learning');
+  const now = new Date();
+
+  // Seleccionar termino: priorizar los que necesitan revision (SM-2)
+  let candidates = vocab.map(v => {
+    const l = learning.find(l2 => l2.vocab_id === v.id);
+    const nextReview = l ? new Date(l.next_review) : new Date(0);
+    const priority = nextReview <= now ? 1000 : 1 / ((nextReview - now) / 86400000 + 1);
+    return { vocab: v, learning: l, priority: priority + Math.random() * 0.5 };
+  });
+  candidates.sort((a, b) => b.priority - a.priority);
+
+  const selected = candidates[0];
+  const correct = selected.vocab;
+
+  // Obtener distractores: solo terminos que tengan traduccion al espanol
+  const others = vocab.filter(v => v.id !== correct.id && v.term_es);
+  const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
+
+  currentQuiz = { correct, learning: selected.learning, distractors: shuffled };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentQuiz;
+  const area = document.getElementById('quizArea');
+  const wordsPerSession = parseInt(document.getElementById('wordsPerSession').value) || 20;
+
+  if (currentMode === 'multiple') {
+    // Opcion multiple: EN -> ES
+    const options = [q.correct, ...q.distractors].sort(() => Math.random() - 0.5);
+    area.innerHTML = `
+      <div class="card quiz-card">
+        <div class="quiz-prompt">¿Como se dice en espanol?</div>
+        <div class="quiz-word">${escapeHtml(q.correct.term_en)}</div>
+        <div class="quiz-opts">
+          ${options.map(o => `<div class="quiz-opt" data-id="${o.id}" onclick="answerMultiple(this, ${o.id === q.correct.id})">${escapeHtml(o.term_es)}</div>`).join('')}
+        </div>
+      </div>`;
+  } else if (currentMode === 'reverse') {
+    // ES -> EN
+    const options = [q.correct, ...q.distractors].sort(() => Math.random() - 0.5);
+    area.innerHTML = `
+      <div class="card quiz-card">
+        <div class="quiz-prompt">¿Como se dice en ingles?</div>
+        <div class="quiz-word">${escapeHtml(q.correct.term_es || '(sin traduccion)')}</div>
+        <div class="quiz-opts">
+          ${options.map(o => `<div class="quiz-opt" data-id="${o.id}" onclick="answerMultiple(this, ${o.id === q.correct.id})">${escapeHtml(o.term_en)}</div>`).join('')}
+        </div>
+      </div>`;
+  } else if (currentMode === 'write') {
+    // Escribir respuesta
+    area.innerHTML = `
+      <div class="card quiz-card">
+        <div class="quiz-prompt">Escribe la traduccion al espanol:</div>
+        <div class="quiz-word">${escapeHtml(q.correct.term_en)}</div>
+        <div class="quiz-input-row">
+          <input class="input-field" id="writeAnswer" placeholder="Tu respuesta..." autofocus>
+          <button class="btn btn-primary" onclick="checkWriteAnswer()">→</button>
+        </div>
+        <div id="writeFeedback" style="margin-top:10px;"></div>
+      </div>`;
+    // Enter para enviar
+    document.getElementById('writeAnswer').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkWriteAnswer();
+    });
+  } else if (currentMode === 'context') {
+    // Completar en contexto
+    let examples = [];
+    try { examples = JSON.parse(q.correct.example_sentences || '[]'); } catch(e) {}
+    let sentence = examples.length > 0 ? examples[0] : `The concept of ${q.correct.term_en} is important.`;
+    const blank = sentence.replace(new RegExp(q.correct.term_en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '_____');
+    area.innerHTML = `
+      <div class="card quiz-card">
+        <div class="quiz-prompt">Completa la frase:</div>
+        <div class="term-ctx" style="text-align:left; font-size:14px;">${escapeHtml(blank)}</div>
+        <div class="quiz-input-row">
+          <input class="input-field" id="contextAnswer" placeholder="Palabra que falta..." autofocus>
+          <button class="btn btn-primary" onclick="checkContextAnswer()">→</button>
+        </div>
+        <div id="contextFeedback" style="margin-top:10px;"></div>
+      </div>`;
+    document.getElementById('contextAnswer').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkContextAnswer();
+    });
+  }
+
+  updateLearnUI();
+}
+
+async function answerMultiple(el, isCorrect) {
+  // Evitar doble click
+  if (el.parentElement.dataset.answered) return;
+  el.parentElement.dataset.answered = 'true';
+
+  el.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    // Mostrar la correcta
+    el.parentElement.querySelectorAll('.quiz-opt').forEach(o => {
+      if (parseInt(o.dataset.id) === currentQuiz.correct.id) o.classList.add('correct');
+    });
+  }
+
+  await recordAnswer(isCorrect);
+  setTimeout(() => loadNextQuestion(), 1200);
+}
+
+async function checkWriteAnswer() {
+  const input = document.getElementById('writeAnswer');
+  const answer = input.value.trim().toLowerCase();
+  const correct = (currentQuiz.correct.term_es || '').toLowerCase();
+  const fb = document.getElementById('writeFeedback');
+
+  if (!answer) return;
+  input.disabled = true;
+
+  // Comparacion flexible (permite errores menores)
+  const isCorrect = answer === correct || levenshtein(answer, correct) <= 2;
+
+  if (isCorrect) {
+    fb.innerHTML = `<div style="color:var(--success); font-weight:700;">✓ ¡Correcto!</div>`;
+  } else {
+    fb.innerHTML = `<div style="color:var(--danger); font-weight:700;">✕ Incorrecto</div>
+      <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">Respuesta correcta: <b>${escapeHtml(currentQuiz.correct.term_es || '(sin traduccion)')}</b></div>`;
+  }
+
+  await recordAnswer(isCorrect);
+  setTimeout(() => loadNextQuestion(), 1800);
+}
+
+async function checkContextAnswer() {
+  const input = document.getElementById('contextAnswer');
+  const answer = input.value.trim().toLowerCase();
+  const correct = currentQuiz.correct.term_en.toLowerCase();
+  const fb = document.getElementById('contextFeedback');
+
+  if (!answer) return;
+  input.disabled = true;
+
+  const isCorrect = answer === correct || correct.includes(answer) || levenshtein(answer, correct) <= 2;
+
+  if (isCorrect) {
+    fb.innerHTML = `<div style="color:var(--success); font-weight:700;">✓ ¡Correcto! — ${escapeHtml(currentQuiz.correct.term_en)}</div>`;
+  } else {
+    fb.innerHTML = `<div style="color:var(--danger); font-weight:700;">✕ Incorrecto</div>
+      <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;">Respuesta: <b>${escapeHtml(currentQuiz.correct.term_en)}</b></div>`;
+  }
+
+  await recordAnswer(isCorrect);
+  setTimeout(() => loadNextQuestion(), 1800);
+}
+
+// Algoritmo SM-2
+async function recordAnswer(isCorrect) {
+  sessionTotal++;
+  if (isCorrect) {
+    sessionCorrect++;
+    streak++;
+  } else {
+    streak = 0;
+  }
+
+  const vocabId = currentQuiz.correct.id;
+  let l = await dbGet('learning', vocabId);
+  if (!l) {
+    l = {
+      vocab_id: vocabId, last_reviewed: null, next_review: new Date().toISOString(),
+      ease_factor: 2.5, interval_days: 1, correct_count: 0, incorrect_count: 0
+    };
+  }
+
+  l.last_reviewed = new Date().toISOString();
+
+  if (isCorrect) {
+    l.correct_count++;
+    // SM-2: calcular nuevo intervalo
+    if (l.interval_days <= 1) {
+      l.interval_days = 1;
+    } else if (l.interval_days === 1) {
+      l.interval_days = 6;
+    } else {
+      l.interval_days = Math.round(l.interval_days * l.ease_factor);
+    }
+    // Ajustar factor de facilidad (minimo 1.3)
+    l.ease_factor = Math.max(1.3, l.ease_factor + 0.1);
+  } else {
+    l.incorrect_count++;
+    // Reset: volver a intervalo corto
+    l.interval_days = 1;
+    l.ease_factor = Math.max(1.3, l.ease_factor - 0.2);
+  }
+
+  // Calcular proxima revision
+  const next = new Date();
+  next.setDate(next.getDate() + l.interval_days);
+  l.next_review = next.toISOString();
+
+  await dbPut('learning', l);
+  updateLearnUI();
+}
+
+function updateLearnUI() {
+  const wordsPerSession = parseInt(document.getElementById('wordsPerSession').value) || 20;
+  document.getElementById('streakText').textContent = `🔥 ${streak} racha`;
+  document.getElementById('sessionText').textContent = `${sessionTotal} / ${wordsPerSession} hoy`;
+  const pct = Math.min(100, (sessionTotal / wordsPerSession) * 100);
+  document.getElementById('learnProgress').style.width = pct + '%';
+}
+
+// Distancia de Levenshtein para comparacion flexible
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// Exponer funciones globales
+window.answerMultiple = answerMultiple;
+window.checkWriteAnswer = checkWriteAnswer;
+window.checkContextAnswer = checkContextAnswer;
+
+// ─── PANTALLA: AJUSTES ───
+
+// Exportar base de datos completa
+document.getElementById('btnExport').addEventListener('click', async () => {
+  const vocab = await dbGetAll('vocabulary');
+  const learning = await dbGetAll('learning');
+  const docs = await dbGetAll('documents');
+
+  const exportData = {
+    version: 1,
+    app: 'ENG-PRO',
+    exported_at: new Date().toISOString(),
+    stats: {
+      vocabulary_count: vocab.length,
+      documents_count: docs.length
+    },
+    vocabulary: vocab,
+    learning: learning,
+    documents: docs
+  };
+
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `engpro-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  await setConfig('last_export', new Date().toISOString());
+  toast(`Exportados ${vocab.length} terminos`);
+  refreshSettings();
+});
+
+// Importar base de datos
+document.getElementById('btnImport').addEventListener('click', () => {
+  document.getElementById('importInput').click();
+});
+
+document.getElementById('importInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if (!data.app || data.app !== 'ENG-PRO') {
+      toast('Archivo no valido: no es un backup de ENG-PRO');
+      return;
+    }
+
+    // Confirmar antes de importar
+    const existingVocab = await dbGetAll('vocabulary');
+    let msg = `¿Importar ${data.vocabulary.length} terminos?`;
+    if (existingVocab.length > 0) {
+      msg += `\n\nYa tienes ${existingVocab.length} terminos. Se fusionaran sin duplicar.`;
+    }
+    if (!confirm(msg)) return;
+
+    // Fusion inteligente: no duplicar terminos existentes
+    const existingTerms = new Map();
+    existingVocab.forEach(v => existingTerms.set(v.term_en.toLowerCase(), v.id));
+
+    let imported = 0;
+    for (const v of data.vocabulary) {
+      const key = v.term_en.toLowerCase();
+      if (existingTerms.has(key)) {
+        // Actualizar solo si el importado tiene mas datos
+        const existingId = existingTerms.get(key);
+        const existing = await dbGet('vocabulary', existingId);
+        if ((!existing.term_es && v.term_es) || (!existing.meaning && v.meaning)) {
+          v.id = existingId;
+          await dbPut('vocabulary', v);
+          imported++;
+        }
+      } else {
+        // Nuevo termino
+        const oldId = v.id;
+        delete v.id;
+        const newId = await dbAdd('vocabulary', v);
+        // Importar progreso asociado
+        const lp = data.learning?.find(l => l.vocab_id === oldId);
+        if (lp) {
+          lp.vocab_id = newId;
+          await dbPut('learning', lp);
+        }
+        imported++;
+      }
+    }
+
+    // Importar documentos
+    if (data.documents) {
+      const existingDocs = await dbGetAll('documents');
+      const existingNames = new Set(existingDocs.map(d => d.filename));
+      for (const d of data.documents) {
+        if (!existingNames.has(d.filename)) {
+          delete d.id;
+          await dbAdd('documents', d);
+        }
+      }
+    }
+
+    await setConfig('last_export', new Date().toISOString());
+    toast(`Importados ${imported} terminos`);
+    refreshDocsScreen();
+    refreshSettings();
+  } catch (err) {
+    toast('Error al importar: ' + err.message);
+    console.error(err);
+  }
+
+  e.target.value = '';
+});
+
+async function refreshSettings() {
+  const lastExport = await getConfig('last_export', null);
+  const vocab = await dbGetAll('vocabulary');
+  const infoEl = document.getElementById('backupInfo');
+  const warnEl = document.getElementById('backupWarning');
+  const warnText = document.getElementById('backupWarningText');
+
+  if (lastExport) {
+    const days = Math.floor((new Date() - new Date(lastExport)) / 86400000);
+    infoEl.textContent = `Ultimo backup: ${formatDate(lastExport)} · ${vocab.length} terminos`;
+    if (days >= 3 && vocab.length > 0) {
+      warnEl.style.display = 'flex';
+      warnText.textContent = `Llevas ${days} dias sin exportar tu base de datos`;
+    } else {
+      warnEl.style.display = 'none';
+    }
+  } else {
+    infoEl.textContent = vocab.length > 0 ? `${vocab.length} terminos · Sin backups aun` : 'Sin backups aun';
+    if (vocab.length > 0) {
+      warnEl.style.display = 'flex';
+      warnText.textContent = 'Nunca has exportado tu base de datos';
+    } else {
+      warnEl.style.display = 'none';
+    }
+  }
+}
+
+// ─── INICIALIZACION ───
+// ─── BASE DE DATOS PRECARGADA ───
+const PRELOADED_DB = [
+  // GLOSSARY: TECHNICAL ENGINEERING (EPC/GRID)
+  {term_en:"Drawing documentation",term_es:"Documentación de planos técnicos",category:"Technical Engineering"},
+  {term_en:"Master Document List (MDL)",term_es:"Lista maestra de entregables",category:"Technical Engineering"},
+  {term_en:"Transmittal",term_es:"Documento oficial de envío de información técnica",category:"Technical Engineering"},
+  {term_en:"Design Review Register",term_es:"Registro de revisión de diseño",category:"Technical Engineering"},
+  {term_en:"Action tracker",term_es:"Seguimiento de tareas pendientes",category:"Technical Engineering"},
+  {term_en:"Stakeholder communication matrix",term_es:"Matriz de comunicación con partes interesadas",category:"Technical Engineering"},
+  {term_en:"Single-line diagram",term_es:"Esquema unifilar",category:"Technical Engineering"},
+  {term_en:"Supporting documents",term_es:"Documentos de respaldo",category:"Technical Engineering"},
+  {term_en:"Deliverables",term_es:"Entregables",category:"Technical Engineering"},
+  {term_en:"EPC Contract",term_es:"Contrato de ingeniería, compras y construcción",category:"Technical Engineering"},
+  {term_en:"ICP",term_es:"Proveedor de conexiones independiente",category:"Technical Engineering"},
+  {term_en:"RFP",term_es:"Solicitud de propuesta",category:"Technical Engineering"},
+  {term_en:"TSO",term_es:"Operador del sistema de transporte",category:"Technical Engineering"},
+  {term_en:"DNO",term_es:"Operador de la red de distribución",category:"Technical Engineering"},
+  {term_en:"Engineering assurance",term_es:"Garantía de ingeniería",category:"Technical Engineering"},
+  {term_en:"Site inspection",term_es:"Inspección in situ",category:"Technical Engineering"},
+  {term_en:"Testing and Commissioning",term_es:"Pruebas y puesta en marcha",category:"Technical Engineering"},
+  {term_en:"Energization process",term_es:"Proceso de energización",category:"Technical Engineering"},
+  // GLOSSARY: CORPORATE & MANAGEMENT
+  {term_en:"Transversal project",term_es:"Proyecto transversal (afecta a varias áreas)",category:"Corporate & Management"},
+  {term_en:"Structured template",term_es:"Plantilla estructurada",category:"Corporate & Management"},
+  {term_en:"Current practices",term_es:"Prácticas actuales",category:"Corporate & Management"},
+  {term_en:"Expected outcome",term_es:"Resultado esperado",category:"Corporate & Management"},
+  {term_en:"Repository",term_es:"Repositorio / Base de datos",category:"Corporate & Management"},
+  {term_en:"Standardized",term_es:"Estandarizado",category:"Corporate & Management"},
+  {term_en:"Streamline",term_es:"Optimizar / Simplificar",category:"Corporate & Management"},
+  {term_en:"Optimization",term_es:"Optimización",category:"Corporate & Management"},
+  {term_en:"Implementation",term_es:"Implementación",category:"Corporate & Management"},
+  {term_en:"Functionalities",term_es:"Funcionalidades",category:"Corporate & Management"},
+  {term_en:"Supervision",term_es:"Supervisión",category:"Corporate & Management"},
+  {term_en:"Identify improvements",term_es:"Identificar mejoras",category:"Corporate & Management"},
+  {term_en:"Standardized building blocks",term_es:"Bloques de construcción estandarizados",category:"Corporate & Management"},
+  {term_en:"Automating processes",term_es:"Automatización de procesos",category:"Corporate & Management"},
+  {term_en:"Data analysis",term_es:"Análisis de datos",category:"Corporate & Management"},
+  // CONNECTORS & DISCOURSE MARKERS
+  {term_en:"In addition",term_es:"Además",category:"Connectors"},
+  {term_en:"Additionally",term_es:"Adicionalmente",category:"Connectors"},
+  {term_en:"Furthermore",term_es:"Es más",category:"Connectors"},
+  {term_en:"Moreover",term_es:"Además (muy formal)",category:"Connectors"},
+  {term_en:"In parallel",term_es:"En paralelo",category:"Connectors"},
+  {term_en:"At the same time",term_es:"Al mismo tiempo",category:"Connectors"},
+  {term_en:"As well as",term_es:"Así como",category:"Connectors"},
+  {term_en:"That said",term_es:"Dicho esto",category:"Connectors"},
+  {term_en:"Having said that",term_es:"Habiendo dicho lo cual",category:"Connectors"},
+  {term_en:"However",term_es:"Sin embargo",category:"Connectors"},
+  {term_en:"Despite this",term_es:"A pesar de esto",category:"Connectors"},
+  {term_en:"Regardless",term_es:"Independientemente de",category:"Connectors"},
+  {term_en:"On the other hand",term_es:"Por otro lado",category:"Connectors"},
+  {term_en:"So far",term_es:"Hasta ahora",category:"Connectors"},
+  {term_en:"Currently",term_es:"Actualmente",category:"Connectors"},
+  {term_en:"At the moment",term_es:"En este momento",category:"Connectors"},
+  {term_en:"At this stage",term_es:"En esta etapa",category:"Connectors"},
+  {term_en:"Going forward",term_es:"De ahora en adelante",category:"Connectors"},
+  {term_en:"Moving forward",term_es:"En el futuro",category:"Connectors"},
+  {term_en:"In the short term",term_es:"A corto plazo",category:"Connectors"},
+  {term_en:"In the coming weeks",term_es:"En las próximas semanas",category:"Connectors"},
+  {term_en:"As a result",term_es:"Como resultado",category:"Connectors"},
+  {term_en:"Therefore",term_es:"Por lo tanto",category:"Connectors"},
+  {term_en:"Consequently",term_es:"En consecuencia",category:"Connectors"},
+  {term_en:"Due to",term_es:"Debido a",category:"Connectors"},
+  // PROFESSIONAL PHRASE BANK
+  {term_en:"From an engineering perspective, we need to review this.",term_es:"",category:"Phrase Bank — Engineering"},
+  {term_en:"The design complies with local grid requirements.",term_es:"",category:"Phrase Bank — Engineering"},
+  {term_en:"The contractor needs to incorporate our comments.",term_es:"",category:"Phrase Bank — Engineering"},
+  {term_en:"We are validating the design assumptions.",term_es:"",category:"Phrase Bank — Engineering"},
+  {term_en:"This needs to be confirmed with the TSO.",term_es:"",category:"Phrase Bank — Engineering"},
+  {term_en:"We are working closely with the Tender team.",term_es:"",category:"Phrase Bank — Collaboration"},
+  {term_en:"This is being carried out in coordination with the Grid Managers.",term_es:"",category:"Phrase Bank — Collaboration"},
+  {term_en:"Let's make sure we are all on the same page.",term_es:"",category:"Phrase Bank — Collaboration"},
+  {term_en:"We provide central support but are fully integrated.",term_es:"",category:"Phrase Bank — Collaboration"},
+  {term_en:"We are currently facing some challenges with the contractor.",term_es:"",category:"Phrase Bank — Problems"},
+  {term_en:"One of the main issues is the delay in receiving templates.",term_es:"",category:"Phrase Bank — Problems"},
+  {term_en:"This represents a technical risk for the project.",term_es:"",category:"Phrase Bank — Problems"},
+  {term_en:"We are addressing this issue as a priority.",term_es:"",category:"Phrase Bank — Problems"},
+  // PRESENTATION STRUCTURES
+  {term_en:"The first point in this Monthly Court is...",term_es:"",category:"Presentations — Intro"},
+  {term_en:"The next item on the agenda is...",term_es:"",category:"Presentations — Intro"},
+  {term_en:"The main idea behind this initiative is...",term_es:"",category:"Presentations — Intro"},
+  {term_en:"The purpose of this point is to make you aware that...",term_es:"",category:"Presentations — Intro"},
+  {term_en:"So far, we have completed three workshops.",term_es:"",category:"Presentations — Progress"},
+  {term_en:"This work is still in progress.",term_es:"",category:"Presentations — Progress"},
+  {term_en:"We expect to finalize the series by May.",term_es:"",category:"Presentations — Progress"},
+  {term_en:"I will keep you updated on the results.",term_es:"",category:"Presentations — Progress"},
+  {term_en:"That's all for this point.",term_es:"",category:"Presentations — Closing"},
+  {term_en:"That concludes the update on this topic.",term_es:"",category:"Presentations — Closing"},
+  {term_en:"The key message is simple: we are one team.",term_es:"",category:"Presentations — Closing"},
+  // DIRECTOR-LEVEL AUTHORITY & ACCOUNTABILITY
+  {term_en:"Unless there are strong objections, we will move forward.",term_es:"",category:"Director-Level"},
+  {term_en:"We need to hold the contractor accountable for these delays.",term_es:"",category:"Director-Level"},
+  {term_en:"I'm looking for more transparency regarding the timeline.",term_es:"",category:"Director-Level"},
+  {term_en:"This is a non-negotiable requirement from our side.",term_es:"",category:"Director-Level"},
+  {term_en:"Please feel free to escalate any issues to me directly.",term_es:"",category:"Director-Level"},
+  {term_en:"I am here to clear any roadblocks you might be facing.",term_es:"",category:"Director-Level"},
+  {term_en:"Let's focus on what really matters here.",term_es:"",category:"Director-Level"},
+  {term_en:"The priority for us should be the EPC appendices.",term_es:"",category:"Director-Level"},
+  // FILLERS & TIME-BUYING EXPRESSIONS
+  {term_en:"That's a good question. Let me think about that for a moment.",term_es:"",category:"Fillers"},
+  {term_en:"Let me take a second to consider the technical implications.",term_es:"",category:"Fillers"},
+  {term_en:"That's an interesting point. Let me reflect on that briefly.",term_es:"",category:"Fillers"},
+  {term_en:"I think there are two aspects to consider here.",term_es:"",category:"Fillers"},
+  {term_en:"Let me break this down into a few simple points.",term_es:"",category:"Fillers"},
+  {term_en:"Just to make sure I understood correctly, the question is...",term_es:"",category:"Fillers"},
+  {term_en:"Based on the information we have today, my understanding is...",term_es:"",category:"Fillers"}
+];
+
+// Cargar base de datos precargada en el primer uso
+async function loadPreloadedDB() {
+  const alreadyLoaded = await getConfig('preloaded_db', false);
+  if (alreadyLoaded) return;
+
+  let count = 0;
+  for (const entry of PRELOADED_DB) {
+    const vocabId = await dbAdd('vocabulary', {
+      term_en: entry.term_en,
+      term_es: entry.term_es,
+      meaning: '',
+      example_sentences: '[]',
+      source_document: 'Base de datos inicial',
+      category: entry.category,
+      date_added: new Date().toISOString(),
+      difficulty_score: 0.5
+    });
+
+    await dbPut('learning', {
+      vocab_id: vocabId,
+      last_reviewed: null,
+      next_review: new Date().toISOString(),
+      ease_factor: 2.5,
+      interval_days: 1,
+      correct_count: 0,
+      incorrect_count: 0
+    });
+    count++;
+  }
+
+  // Registrar como documento
+  await dbAdd('documents', {
+    filename: 'Base de datos inicial',
+    upload_date: new Date().toISOString(),
+    word_count: 0,
+    terms_extracted: count
+  });
+
+  await setConfig('preloaded_db', true);
+  toast(`Base de datos cargada: ${count} terminos`);
+}
+
+async function init() {
+  await openDB();
+  await loadTheme();
+  await loadPreloadedDB();
+  await refreshDocsScreen();
+  await refreshSettings();
+
+  // Registrar Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+  }
+}
+
+init();
+</script>
+</body>
+</html>

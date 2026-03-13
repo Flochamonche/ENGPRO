@@ -1,0 +1,245 @@
+ESTRUCTURA DE CAMPOS PARA BASE DE DATOS - APRENDIZAJE INGLÉS PROFESIONAL
+
+CAMPOS INCLUIDOS:
+
+Glossary: Technical Engineering (EPC/Grid)
+
+Glossary: Corporate & Management
+
+Connectors & Discourse Markers
+
+Professional Phrase Bank (Categorized)
+
+Presentation Structures (Monthly Courts)
+
+Director-Level Authority & Accountability
+
+Fillers & Time-Buying Expressions
+
+
+GLOSSARY: TECHNICAL ENGINEERING (EPC/GRID)
+=============================================
+
+Drawing documentation: Documentación de planos técnicos.
+
+Master Document List (MDL): Lista maestra de entregables.
+
+Transmittal: Documento oficial de envío de información técnica.
+
+Design Review Register: Registro de revisión de diseño.
+
+Action tracker: Seguimiento de tareas pendientes.
+
+Stakeholder communication matrix: Matriz de comunicación con partes interesadas.
+
+Single-line diagram: Esquema unifilar.
+
+Supporting documents: Documentos de respaldo.
+
+Deliverables: Entregables.
+
+EPC Contract: Contrato de ingeniería, compras y construcción.
+
+ICP: Proveedor de conexiones independiente.
+
+RFP: Solicitud de propuesta.
+
+TSO: Operador del sistema de transporte.
+
+DNO: Operador de la red de distribución.
+
+Engineering assurance: Garantía de ingeniería.
+
+Site inspection: Inspección in situ.
+
+Testing and Commissioning: Pruebas y puesta en marcha.
+
+Energization process: Proceso de energización.
+
+GLOSSARY: CORPORATE & MANAGEMENT
+===================================
+
+Transversal project: Proyecto transversal (afecta a varias áreas).
+
+Structured template: Plantilla estructurada.
+
+Current practices: Prácticas actuales.
+
+Expected outcome: Resultado esperado.
+
+Repository: Repositorio / Base de datos.
+
+Standardized: Estandarizado.
+
+Streamline: Optimizar / Simplificar.
+
+Optimization: Optimización.
+
+Implementation: Implementación.
+
+Functionalities: Funcionalidades.
+
+Supervision: Supervisión.
+
+Identify improvements: Identificar mejoras.
+
+Standardized building blocks: Bloques de construcción estandarizados.
+
+Automating processes: Automatización de procesos.
+
+Data analysis: Análisis de datos.
+
+CONNECTORS & DISCOURSE MARKERS
+==================================
+
+In addition: Además.
+
+Additionally: Adicionalmente.
+
+Furthermore: Es más.
+
+Moreover: Además (muy formal).
+
+In parallel: En paralelo.
+
+At the same time: Al mismo tiempo.
+
+As well as: Así como.
+
+That said: Dicho esto.
+
+Having said that: Habiendo dicho lo cual.
+
+However: Sin embargo.
+
+Despite this: A pesar de esto.
+
+Regardless: Independientemente de.
+
+On the other hand: Por otro lado.
+
+So far: Hasta ahora.
+
+Currently: Actualmente.
+
+At the moment: En este momento.
+
+At this stage: En esta etapa.
+
+Going forward: De ahora en adelante.
+
+Moving forward: En el futuro.
+
+In the short term: A corto plazo.
+
+In the coming weeks: En las próximas semanas.
+
+As a result: Como resultado.
+
+Therefore: Por lo tanto.
+
+Consequently: En consecuencia.
+
+Due to: Debido a.
+
+PROFESSIONAL PHRASE BANK (CATEGORIZED)
+=========================================
+
+[ENGINEERING & COORDINATION]
+
+"From an engineering perspective, we need to review this."
+
+"The design complies with local grid requirements."
+
+"The contractor needs to incorporate our comments."
+
+"We are validating the design assumptions."
+
+"This needs to be confirmed with the TSO."
+
+[COLLABORATION & TEAMWORK]
+
+"We are working closely with the Tender team."
+
+"This is being carried out in coordination with the Grid Managers."
+
+"Let’s make sure we are all on the same page."
+
+"We provide central support but are fully integrated."
+
+[PROBLEMS & CHALLENGES]
+
+"We are currently facing some challenges with the contractor."
+
+"One of the main issues is the delay in receiving templates."
+
+"This represents a technical risk for the project."
+
+"We are addressing this issue as a priority."
+
+PRESENTATION STRUCTURES (MONTHLY COURTS)
+===========================================
+
+[INTRODUCING TOPICS]
+
+"The first point in this Monthly Court is..."
+
+"The next item on the agenda is..."
+
+"The main idea behind this initiative is..."
+
+"The purpose of this point is to make you aware that..."
+
+[EXPLAINING PROGRESS]
+
+"So far, we have completed three workshops."
+
+"This work is still in progress."
+
+"We expect to finalize the series by May."
+
+"I will keep you updated on the results."
+
+[CLOSING TOPICS]
+
+"That’s all for this point."
+
+"That concludes the update on this topic."
+
+"The key message is simple: we are one team."
+
+DIRECTOR-LEVEL AUTHORITY & ACCOUNTABILITY
+=============================================
+
+"Unless there are strong objections, we will move forward."
+
+"We need to hold the contractor accountable for these delays."
+
+"I’m looking for more transparency regarding the timeline."
+
+"This is a non-negotiable requirement from our side."
+
+"Please feel free to escalate any issues to me directly."
+
+"I am here to clear any roadblocks you might be facing."
+
+"Let’s focus on what really matters here."
+
+"The priority for us should be the EPC appendices."
+
+FILLERS & TIME-BUYING EXPRESSIONS
+====================================
+
+"That’s a good question. Let me think about that for a moment."
+
+"Let me take a second to consider the technical implications."
+
+"That’s an interesting point. Let me reflect on that briefly."
+
+"I think there are two aspects to consider here."
+
+"Let me break this down into a few simple points."
+
+"Just to make sure I understood correctly, the question is..."
+
+"Based on the information we have today, my understanding is..."
