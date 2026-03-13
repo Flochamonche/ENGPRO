@@ -1308,9 +1308,14 @@ document.getElementById('btnProcessText').addEventListener('click', async () => 
     return;
   }
 
-  // Detectar si es lista de palabras o texto continuo
-  if (isWordList(text)) {
-    toast('Lista de palabras detectada...');
+  // Detectar si es lista de palabras/frases o texto continuo
+  // Una sola linea corta (hasta 10 palabras) se trata como entrada directa
+  const lineCount = text.split('\n').map(l => l.trim()).filter(l => l.length > 0).length;
+  const wordCount = text.split(/\s+/).length;
+  const isSingleEntry = lineCount === 1 && wordCount <= 10;
+
+  if (isSingleEntry || isWordList(text)) {
+    toast(isSingleEntry ? 'Procesando entrada...' : 'Lista de palabras detectada...');
     const candidates = parseWordList(text);
     if (candidates.length === 0) {
       toast('No se encontraron terminos validos');
