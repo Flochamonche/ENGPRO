@@ -343,6 +343,26 @@ body.dark .warn-banner { background: #78350F; color: #FDE68A; }
 
 .export-btns { display: flex; flex-direction: column; gap: 8px; }
 
+/* === Gestion de categorias === */
+.cat-manager { margin-bottom: 14px; }
+.cat-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+}
+.cat-item:last-child { border-bottom: none; }
+.cat-name { flex: 1; font-size: 14px; font-weight: 500; }
+.cat-count { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+.cat-actions { display: flex; gap: 4px; }
+.cat-actions button {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg-card); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.cat-actions button:hover { border-color: var(--primary); }
+.cat-add-row { display: flex; gap: 8px; margin-top: 8px; }
+.cat-add-row .input-field { flex: 1; }
+
 /* === Modal/Overlay === */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
@@ -593,6 +613,17 @@ body.dark .warn-banner { background: #78350F; color: #FDE68A; }
         <div class="sett-item">
           <div><div class="sett-label">Modo oscuro</div><div class="sett-desc">Tema dia / noche</div></div>
           <div class="toggle" id="toggleTheme"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sett-group">
+      <div class="sett-title">Categorias</div>
+      <div class="card cat-manager" id="catManager">
+        <div id="catList"></div>
+        <div class="cat-add-row">
+          <input class="input-field" id="newCatInput" placeholder="Nueva categoria...">
+          <button class="btn btn-primary btn-sm" id="btnAddCat">+</button>
         </div>
       </div>
     </div>
@@ -1555,20 +1586,45 @@ async function fetchTermInfo(term, index) {
   }
 }
 
+// ─── CATEGORIAS: LISTA MAESTRA DINAMICA ───
+
+// Obtener todas las categorias unicas (de vocabulario existente + candidatos opcionales)
+async function getAllCategories(extraCandidates) {
+  const vocab = await dbGetAll('vocabulary');
+  const cats = new Set();
+  vocab.forEach(v => { if (v.category) cats.add(v.category); });
+  // Categorias del parser estructurado (siempre disponibles)
+  Object.values(SECTION_CATEGORIES).forEach(c => cats.add(c));
+  Object.values(SUB_CATEGORIES).forEach(c => cats.add(c));
+  // Categorias de candidatos entrantes
+  if (extraCandidates) {
+    extraCandidates.forEach(c => { if (c.category) cats.add(c.category); });
+  }
+  // Siempre incluir General como fallback
+  cats.add('General');
+  return [...cats].sort();
+}
+
+// Generar opciones HTML de categorias
+function buildCatOptions(categories, selected) {
+  return categories.map(c =>
+    `<option value="${c}" ${c === selected ? 'selected' : ''}>${c}</option>`
+  ).join('');
+}
+
 // ─── PANTALLA: REVISION ───
 
 let reviewCandidates = [];
 let reviewAccepted = new Set();
 
-function showReviewScreen(candidates, filename) {
+async function showReviewScreen(candidates, filename) {
   reviewCandidates = candidates;
   reviewAccepted = new Set();
   showScreen('review');
 
-  // Recopilar todas las categorias unicas de los candidatos
-  const allCategories = new Set(['General', 'Business', 'Technical', 'Legal', 'Engineering', 'Finance']);
-  candidates.forEach(c => { if (c.category) allCategories.add(c.category); });
-  const catOptions = [...allCategories].sort().map(c => `<option value="${c}">${c}</option>`).join('');
+  // Recopilar todas las categorias (maestras + candidatos)
+  const allCategories = await getAllCategories(candidates);
+  const catOptions = buildCatOptions(allCategories, 'General');
 
   document.getElementById('reviewCount').textContent = candidates.length + ' candidatos';
   const container = document.getElementById('reviewList');
@@ -1584,9 +1640,7 @@ function showReviewScreen(candidates, filename) {
     const hasTrans = c.term_es ? true : false;
     const esPlaceholder = hasTrans ? '' : 'Buscando traduccion...';
     // Seleccionar la categoria que viene del parser
-    const catOptionsWithSelected = [...allCategories].sort().map(cat =>
-      `<option value="${cat}" ${c.category === cat ? 'selected' : ''}>${cat}</option>`
-    ).join('');
+    const catOptionsWithSelected = buildCatOptions(allCategories, c.category || 'General');
 
     return `<div class="card" id="review-card-${i}" style="border-left:3px solid var(--border);">
       <div class="term-en">${escapeHtml(c.term_en)}</div>
@@ -1830,6 +1884,9 @@ async function showVocabDetail(id) {
   let examples = [];
   try { examples = JSON.parse(v.example_sentences || '[]'); } catch(e) {}
 
+  // Obtener categorias dinamicas
+  const categories = await getAllCategories();
+
   const modal = document.getElementById('modalContent');
   modal.innerHTML = `
     <h3 style="color:var(--primary);">${escapeHtml(v.term_en)}</h3>
@@ -1844,9 +1901,7 @@ async function showVocabDetail(id) {
     <div class="detail-field">
       <div class="detail-label">Categoria</div>
       <select class="input-field" id="edit-cat">
-        ${['General','Business','Technical','Legal','Engineering','Finance'].map(c =>
-          `<option value="${c}" ${v.category === c ? 'selected' : ''}>${c}</option>`
-        ).join('')}
+        ${buildCatOptions(categories, v.category || 'General')}
       </select>
     </div>
     ${examples.length > 0 ? `
@@ -2394,6 +2449,7 @@ document.getElementById('importInput').addEventListener('change', async (e) => {
 });
 
 async function refreshSettings() {
+  await renderCategoryManager();
   const lastExport = await getConfig('last_export', null);
   const vocab = await dbGetAll('vocabulary');
   const infoEl = document.getElementById('backupInfo');
@@ -2419,6 +2475,192 @@ async function refreshSettings() {
     }
   }
 }
+
+// ─── GESTION DE CATEGORIAS (CRUD) ───
+
+// Renderizar la lista de categorias en Ajustes
+async function renderCategoryManager() {
+  const vocab = await dbGetAll('vocabulary');
+  const catMap = new Map(); // categoria -> cantidad de palabras
+  vocab.forEach(v => {
+    const cat = v.category || 'General';
+    catMap.set(cat, (catMap.get(cat) || 0) + 1);
+  });
+
+  // Incluir categorias del parser aunque no tengan palabras aun
+  Object.values(SECTION_CATEGORIES).forEach(c => { if (!catMap.has(c)) catMap.set(c, 0); });
+  Object.values(SUB_CATEGORIES).forEach(c => { if (!catMap.has(c)) catMap.set(c, 0); });
+  if (!catMap.has('General')) catMap.set('General', 0);
+
+  const sorted = [...catMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const container = document.getElementById('catList');
+
+  container.innerHTML = sorted.map(([cat, count]) => `
+    <div class="cat-item">
+      <div class="cat-name">${escapeHtml(cat)}</div>
+      <div class="cat-count">${count}</div>
+      <div class="cat-actions">
+        <button onclick="renameCategory('${escapeHtml(cat.replace(/'/g, "\\'"))}')" title="Renombrar">✏️</button>
+        <button onclick="deleteCategory('${escapeHtml(cat.replace(/'/g, "\\'"))}')" title="Eliminar">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Crear nueva categoria
+document.getElementById('btnAddCat').addEventListener('click', async () => {
+  const input = document.getElementById('newCatInput');
+  const name = input.value.trim();
+  if (!name) { toast('Escribe un nombre para la categoria'); return; }
+
+  // Verificar que no exista
+  const categories = await getAllCategories();
+  if (categories.some(c => c.toLowerCase() === name.toLowerCase())) {
+    toast('Esa categoria ya existe');
+    return;
+  }
+
+  // Crear un registro config para que persista aunque no tenga palabras
+  const customCats = await getConfig('custom_categories', []);
+  customCats.push(name);
+  await setConfig('custom_categories', customCats);
+
+  input.value = '';
+  toast(`Categoria "${name}" creada`);
+  renderCategoryManager();
+});
+
+// Actualizar getAllCategories para incluir categorias custom
+const _origGetAllCategories = getAllCategories;
+getAllCategories = async function(extraCandidates) {
+  const cats = new Set(await _origGetAllCategories(extraCandidates));
+  const customCats = await getConfig('custom_categories', []);
+  customCats.forEach(c => cats.add(c));
+  return [...cats].sort();
+};
+
+// Renombrar categoria
+async function renameCategory(oldName) {
+  const newName = prompt(`Renombrar "${oldName}" a:`, oldName);
+  if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
+  const trimmed = newName.trim();
+
+  // Verificar que no exista
+  const categories = await getAllCategories();
+  if (categories.some(c => c.toLowerCase() === trimmed.toLowerCase() && c !== oldName)) {
+    toast('Esa categoria ya existe');
+    return;
+  }
+
+  // Actualizar todas las palabras con la categoria antigua
+  const vocab = await dbGetAll('vocabulary');
+  let updated = 0;
+  for (const v of vocab) {
+    if (v.category === oldName) {
+      v.category = trimmed;
+      await dbPut('vocabulary', v);
+      updated++;
+    }
+  }
+
+  // Actualizar categorias custom
+  const customCats = await getConfig('custom_categories', []);
+  const idx = customCats.indexOf(oldName);
+  if (idx >= 0) customCats[idx] = trimmed;
+  else customCats.push(trimmed);
+  // Eliminar la antigua si era custom
+  const oldIdx = customCats.indexOf(oldName);
+  if (oldIdx >= 0 && oldIdx !== customCats.indexOf(trimmed)) customCats.splice(oldIdx, 1);
+  await setConfig('custom_categories', customCats);
+
+  toast(`"${oldName}" renombrada a "${trimmed}" (${updated} terminos actualizados)`);
+  renderCategoryManager();
+}
+
+// Borrar categoria — dialogo con opciones
+async function deleteCategory(catName) {
+  if (catName === 'General') {
+    toast('"General" no se puede eliminar (es la categoria por defecto)');
+    return;
+  }
+
+  const vocab = await dbGetAll('vocabulary');
+  const affected = vocab.filter(v => v.category === catName);
+  const count = affected.length;
+
+  if (count === 0) {
+    // Sin palabras, borrar directamente
+    if (!confirm(`¿Eliminar la categoria "${catName}"?`)) return;
+    await removeCategoryEntry(catName);
+    toast(`Categoria "${catName}" eliminada`);
+    renderCategoryManager();
+    return;
+  }
+
+  // Mostrar dialogo con opciones
+  const categories = (await getAllCategories()).filter(c => c !== catName);
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <h3>Eliminar "${escapeHtml(catName)}"</h3>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      Esta categoria tiene <b>${count}</b> palabra${count > 1 ? 's' : ''}. ¿Que quieres hacer con ella${count > 1 ? 's' : ''}?
+    </p>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="btn btn-primary btn-block" id="btnCatMoveGeneral">
+        Mover todas a "General"
+      </button>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select class="input-field" id="catMoveTarget" style="flex:1;">
+          ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
+        </select>
+        <button class="btn btn-outline btn-sm" id="btnCatMoveCustom" style="white-space:nowrap;">
+          Mover aqui
+        </button>
+      </div>
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Cancelar</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+
+  // Mover a General
+  document.getElementById('btnCatMoveGeneral').addEventListener('click', async () => {
+    for (const v of affected) {
+      v.category = 'General';
+      await dbPut('vocabulary', v);
+    }
+    await removeCategoryEntry(catName);
+    closeModal();
+    toast(`${count} terminos movidos a "General". Categoria eliminada.`);
+    renderCategoryManager();
+  });
+
+  // Mover a otra categoria elegida
+  document.getElementById('btnCatMoveCustom').addEventListener('click', async () => {
+    const target = document.getElementById('catMoveTarget').value;
+    for (const v of affected) {
+      v.category = target;
+      await dbPut('vocabulary', v);
+    }
+    await removeCategoryEntry(catName);
+    closeModal();
+    toast(`${count} terminos movidos a "${target}". Categoria eliminada.`);
+    renderCategoryManager();
+  });
+}
+
+// Eliminar entrada de categoria (de custom_categories)
+async function removeCategoryEntry(catName) {
+  const customCats = await getConfig('custom_categories', []);
+  const idx = customCats.indexOf(catName);
+  if (idx >= 0) {
+    customCats.splice(idx, 1);
+    await setConfig('custom_categories', customCats);
+  }
+}
+
+// Exponer funciones globales
+window.renameCategory = renameCategory;
+window.deleteCategory = deleteCategory;
 
 // ─── INICIALIZACION ───
 // ─── BASE DE DATOS PRECARGADA ───
