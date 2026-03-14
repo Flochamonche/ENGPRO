@@ -84,13 +84,13 @@ Engpro/
 - Tarjetas con: término, contexto, traducción, significado, categoría
 - Botones: aceptar / rechazar por término
 - Botones: aceptar todos / rechazar todos (para bases de datos)
-- Categoría auto-asignada desde el parser, editable
+- Categoría auto-asignada desde el parser, editable (lista maestra dinámica)
 - Barra de progreso de revisión
 
 ### 5. Diccionario
 - Búsqueda por texto (inglés o español)
 - Filtros por categoría (chips dinámicos)
-- Detalle/edición de cada término (modal)
+- Detalle/edición de cada término (modal con categorías dinámicas)
 - Eliminar términos individuales
 - Indicador de dificultad (fácil/media/difícil)
 
@@ -125,12 +125,19 @@ Engpro/
 - 7 categorías: Technical Engineering, Corporate & Management, Connectors, Phrase Bank (3 sub), Presentations (3 sub), Director-Level, Fillers
 - Se cargan automáticamente solo la primera vez
 
+### 10. Gestión de categorías (CRUD)
+- Lista maestra dinámica: se construye desde vocabulario existente + parser + categorías custom
+- **Crear**: nuevas categorías desde Ajustes (persistidas en config)
+- **Renombrar**: actualiza automáticamente todas las palabras de esa categoría
+- **Borrar**: diálogo con opciones — mover palabras a "General" o elegir otra categoría
+- Unificada en todas las pantallas: revisión, edición del diccionario, quiz
+
 ## Esquema IndexedDB
 ```
 vocabulary: { id, term_en, term_es, meaning, example_sentences, source_document, category, date_added, difficulty_score }
 learning:   { vocab_id, last_reviewed, next_review, ease_factor, interval_days, correct_count, incorrect_count }
 documents:  { id, filename, upload_date, word_count, terms_extracted }
-config:     { key, value }
+config:     { key, value }  ← incluye 'custom_categories' (array de categorías creadas por el usuario)
 ```
 
 ## Instrucciones para Claude
@@ -164,3 +171,4 @@ config:     { key, value }
 - **Términos duplicados en extracción**: añadido filtro de subconjuntos y deduplicación contra DB
 - **Scripts bloqueantes**: movidos a carga `defer` para no bloquear renderizado
 - **file:// protocol**: CORS bloquea manifest.json y Service Worker en local (normal, funciona al hostear)
+- **Categorías inconsistentes**: la pantalla de revisión y edición tenían categorías hardcodeadas (General, Business, Technical, Legal, Engineering, Finance) que no coincidían con las del parser (Technical Engineering, Connectors, etc.). Unificado con lista maestra dinámica + gestión CRUD

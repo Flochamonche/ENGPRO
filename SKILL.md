@@ -63,6 +63,7 @@ App implementada en archivo único `index.html` con:
 - Export/import JSON con fusión inteligente
 - Tema día/noche persistente
 - PWA instalable en móvil
+- Gestión de categorías CRUD (crear, renombrar, borrar) en Ajustes
 
 **Desplegado en:** https://flochamonche.github.io/ENGPRO/
 
